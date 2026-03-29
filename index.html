@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WifiCard v9.0 -->
+<!-- WifiCard v10.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2415,6 +2415,52 @@ body {
 
 @media print {
   .card-stats-bar { display: none !important; }
+  .print-toast { display: none !important; }
+  .card-count-badge { display: none !important; }
+}
+
+/* v10: Print Toast */
+.print-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-size: 13px;
+  font-family: var(--font-ui);
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.print-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* v10: Card Count Badge */
+.card-count-badge {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px auto 0;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-ui);
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+  border-radius: 20px;
+  width: fit-content;
+}
+.card-count-badge.active {
+  display: flex;
 }
 </style>
 </head>
@@ -2504,7 +2550,7 @@ body {
       <!-- Welcome Message -->
       <div class="welcome-field">
         <label for="welcomeMsg">Welcome message <span style="font-weight:400;color:var(--color-text-secondary);">(optional)</span></label>
-        <input type="text" id="welcomeMsg" placeholder="Welcome to our home!" maxlength="200" autocomplete="off" aria-describedby="welcome-hint">
+        <input type="text" id="welcomeMsg" placeholder="e.g. Welcome! Enjoy your stay &#127968;" maxlength="200" autocomplete="off" aria-describedby="welcome-hint">
         <div class="welcome-char-count" aria-live="polite"><span id="welcomeCharCount">0</span>/200</div>
         <span id="welcome-hint" class="sr-only">Optional welcome text shown on the card above the QR code</span>
       </div>
@@ -2643,6 +2689,9 @@ body {
           Share on X
         </button>
       </div>
+
+      <!-- v10: Card Count Badge -->
+      <div class="card-count-badge" id="cardCountBadge" aria-live="polite"></div>
 
       <!-- v9: Card Stats -->
       <div class="card-stats-bar" id="cardStatsBar">
@@ -3312,6 +3361,12 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
   });
 
   // --- Print ---
+  function showPrintToast() {
+    var toast = document.getElementById('printToast');
+    if (!toast) return;
+    toast.classList.add('visible');
+    setTimeout(function() { toast.classList.remove('visible'); }, 3500);
+  }
   btnPrint.addEventListener('click', function() {
     window.print();
   });
@@ -4210,7 +4265,20 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
   var batchAddBtn = document.getElementById('batchAddBtn');
   var batchList = document.getElementById('batchList');
   var batchCountEl = document.getElementById('batchCount');
+  var cardCountBadge = document.getElementById('cardCountBadge');
   var MAX_BATCH = 3;
+
+  function updateCardCountBadge() {
+    if (!cardCountBadge) return;
+    var total = batchNetworks.length + 1;
+    if (batchNetworks.length === 0) {
+      cardCountBadge.classList.remove('active');
+      cardCountBadge.textContent = '';
+    } else {
+      cardCountBadge.classList.add('active');
+      cardCountBadge.textContent = '1 of ' + total + ' cards';
+    }
+  }
 
   function renderBatchList() {
     if (batchNetworks.length === 0) {
@@ -4218,6 +4286,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       batchCountEl.style.display = 'none';
       batchAddBtn.disabled = false;
       batchAddBtn.textContent = '+ Add Another Network';
+      updateCardCountBadge();
       return;
     }
     batchCountEl.style.display = 'block';
@@ -4233,6 +4302,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
         '</button>' +
       '</div>';
     }).join('');
+    updateCardCountBadge();
   }
 
   batchAddBtn.addEventListener('click', function() {
@@ -4274,8 +4344,9 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
 
   // Override print to handle batch mode
   var _origPrintHandler = btnPrint.onclick;
-  btnPrint.removeEventListener('click', function() { window.print(); });
+  btnPrint.removeEventListener('click', function() { showPrintToast(); window.print(); });
   btnPrint.addEventListener('click', function(e) {
+    showPrintToast();
     if (batchNetworks.length === 0) {
       window.print();
       return;
@@ -4485,6 +4556,7 @@ document.addEventListener('keydown', function(e) {
     <button class="pwa-install-banner__btn pwa-install-banner__btn--install" id="pwaInstallBtn">Install</button>
   </div>
 </div>
+<div class="print-toast" id="printToast">Tip: Choose &lsquo;Save as PDF&rsquo; for digital sharing</div>
 <div class="oc-footer"><a href="https://magic-dev-kz.github.io/openclaw/" target="_blank" rel="noopener">More free tools → OpenClaw</a></div>
 </body>
 </html>

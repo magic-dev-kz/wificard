@@ -1,5 +1,17 @@
 # WifiCard — Changelog
 
+## v10.0 (2026-03-29)
+### Added
+- **Welcome message placeholder** — placeholder text changed to "e.g. Welcome! Enjoy your stay" for a more helpful hint
+- **Print toast** — clicking Print shows a small toast notification "Tip: Choose 'Save as PDF' for digital sharing" that auto-dismisses after 3.5 seconds
+- **Card count badge** — when batch mode is active (2+ networks), a pill badge "1 of N cards" appears below the card preview
+
+### Changed
+- Version bumped to v10.0
+- SW cache bumped to `wificard-v10.0`
+
+---
+
 ## v9.0 (2026-03-29)
 ### Added
 - **Card Hover Parallax Effect** — subtle 3D tilt on the preview card when hovering; CSS perspective (800px) with rotateX/rotateY driven by mouse position (max ±5deg); smooth reset transition on mouse leave
