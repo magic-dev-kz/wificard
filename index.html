@@ -2793,6 +2793,17 @@ body {
         <span id="qr-ec-hint" class="sr-only">Higher error correction makes QR codes scannable even if partially damaged</span>
       </div>
 
+      <!-- v14: QR Size Selector -->
+      <div class="qr-ec-field">
+        <label for="qrSizeSelect">QR code size</label>
+        <select id="qrSizeSelect" aria-describedby="qr-size-hint">
+          <option value="80">Small (80px)</option>
+          <option value="120" selected>Standard (120px)</option>
+          <option value="180">Large (180px)</option>
+        </select>
+        <span id="qr-size-hint" class="sr-only">Controls the size of the QR code on the card</span>
+      </div>
+
       <hr class="form-divider">
 
       <!-- Toggles -->
@@ -3041,7 +3052,8 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
         welcome: welcomeInput.value,
         note: noteInput.value,
         security: securitySelect.value,
-        hidden: hiddenCheckbox.checked
+        hidden: hiddenCheckbox.checked,
+        qrSize: document.getElementById('qrSizeSelect') ? document.getElementById('qrSizeSelect').value : '120'
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       if (customAccentColor) {
@@ -3354,11 +3366,17 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     }
     wifiCardEl.innerHTML = tpl.html;
 
-    // Render QR code into the canvas
+    // Render QR code into the canvas (v14: use selected QR size)
     var canvas = document.getElementById('qrCanvas');
     if (canvas) {
       var wifiStr = buildWifiString();
-      renderQR(canvas, wifiStr, 120, tpl.qr.fg, tpl.qr.bg);
+      var qrSel = document.getElementById('qrSizeSelect');
+      var qrPx = qrSel ? parseInt(qrSel.value, 10) : 120;
+      canvas.width = qrPx;
+      canvas.height = qrPx;
+      canvas.style.width = qrPx + 'px';
+      canvas.style.height = qrPx + 'px';
+      renderQR(canvas, wifiStr, qrPx, tpl.qr.fg, tpl.qr.bg);
     }
   }
 
@@ -3562,7 +3580,8 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     var v = getValues();
     var W = 756; // 2x card width for high res
     var H = 528; // 2x card height
-    var QR_SIZE = 240; // 2x QR
+    var qrSel = document.getElementById('qrSizeSelect');
+    var QR_SIZE = (qrSel ? parseInt(qrSel.value, 10) : 120) * 2; // 2x QR for retina
     var canvas = document.createElement('canvas');
     canvas.width = W;
     canvas.height = H;
@@ -4294,6 +4313,14 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
         }
       });
     }
+    // v14: Restore QR size
+    if (saved.qrSize) {
+      var qrSel = document.getElementById('qrSizeSelect');
+      if (qrSel) {
+        qrSel.value = saved.qrSize;
+        document.documentElement.style.setProperty('--qr-size', saved.qrSize + 'px');
+      }
+    }
     updateAccentColorUI();
   })();
 
@@ -4324,9 +4351,10 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
   function applyCardSize(w, h) {
     document.documentElement.style.setProperty('--card-width', w + 'px');
     document.documentElement.style.setProperty('--card-height', h + 'px');
-    // Also update QR size proportionally
-    var qrSize = Math.round(Math.min(w, h) * 0.45);
-    document.documentElement.style.setProperty('--qr-size', qrSize + 'px');
+    // v14: QR size controlled by dropdown, not card size
+    var qrSel = document.getElementById('qrSizeSelect');
+    var qrPx = qrSel ? parseInt(qrSel.value, 10) : 120;
+    document.documentElement.style.setProperty('--qr-size', qrPx + 'px');
     renderCard();
   }
 
@@ -4364,6 +4392,14 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
   // --- v8: QR Error Correction Level ---
   var qrErrorLevelSelect = document.getElementById('qrErrorLevel');
   qrErrorLevelSelect.addEventListener('change', scheduleUpdateAndSave);
+
+  // --- v14: QR Size Selector ---
+  var qrSizeSelect = document.getElementById('qrSizeSelect');
+  qrSizeSelect.addEventListener('change', function() {
+    var px = parseInt(qrSizeSelect.value, 10) || 120;
+    document.documentElement.style.setProperty('--qr-size', px + 'px');
+    scheduleUpdateAndSave();
+  });
 
   // Override renderQR to use selected error correction level
   var _origRenderQR = renderQR;

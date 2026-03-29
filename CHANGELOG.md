@@ -1,9 +1,10 @@
 # WifiCard — Changelog
 
-## v14.0 (2026-03-29) — Card Count Label in Print
+## v14.0 (2026-03-29) — Card Count Label in Print & QR Size Selector
 
 ### Added
 - **Card count label in print** -- when printing in batch mode, each card shows "Card 1 of N", "Card 2 of N" etc. in the print output; hidden in single card mode (no batch networks)
+- **Multiple QR sizes** -- dropdown selector with Small (80px), Standard (120px, default), and Large (180px) options; updates `--qr-size` CSS var and canvas render size; persisted in localStorage; overrides card-size auto-calculation
 - Version bumped to v14.0
 - SW cache bumped to `wificard-v14.0`
 
