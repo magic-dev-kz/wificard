@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WifiCard v12.0 -->
+<!-- WifiCard v13.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -218,8 +218,41 @@
   100% { box-shadow: var(--shadow-md); }
 }
 
+/* v13: Print-out animation on first generate */
+@keyframes cardPrintOut {
+  0% {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+    transform: translateY(-30px) scaleY(0.3);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-10px) scaleY(0.6);
+  }
+  60% {
+    clip-path: inset(0 0 20% 0);
+    transform: translateY(4px) scaleY(1.02);
+  }
+  80% {
+    clip-path: inset(0 0 0% 0);
+    transform: translateY(-2px) scaleY(1);
+  }
+  100% {
+    clip-path: inset(0 0 0% 0);
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes cardUnfold {
+  0% { transform: perspective(800px) rotateX(-15deg); transform-origin: top center; }
+  100% { transform: perspective(800px) rotateX(0deg); transform-origin: top center; }
+}
+
 .wifi-card.first-render {
-  animation: cardIn 0.6s ease 0.15s both, cardShadowPulse 2s ease 0.8s 1;
+  animation: cardPrintOut 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both,
+             cardUnfold 0.5s ease 0.8s both,
+             cardShadowPulse 2s ease 1.2s 1;
 }
 
 .wifi-card.template-fade-in {

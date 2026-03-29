@@ -1,5 +1,19 @@
 # WifiCard — Changelog
 
+## v13.0 (2026-03-29) — Print-Out Animation
+
+### Added
+- **Card print-out animation** -- on first card generation, the wifi card "prints out" with a slide-down + unfold CSS keyframe animation (clip-path reveal, perspective rotateX unfold, shadow pulse); replaces the simple fade-in for the initial render
+
+### Changed
+- Version bumped to v13.0
+- SW cache bumped to `wificard-v13.0`
+
+### Preserved
+- All v12.x features intact (zoom, favorites, sound)
+
+---
+
 ## v12.0 (2026-03-29) — Zoom, Favorites & Sound
 
 ### Added
