@@ -2,17 +2,22 @@
 
 **Beautiful printable WiFi cards with QR codes. Free, offline, no server.**
 
-Type your WiFi name and password → pick a template → print or download. Guests scan the QR code and connect instantly. No app needed.
+Type your WiFi name and password → pick a template → customize colors → print or download as PDF/PNG. Guests scan the QR code and connect instantly. No app needed.
+
+**[Try it free →](https://magic-dev-kz.github.io/wificard/)**
 
 ---
 
 ## Features
 
 - **6 designer templates** — Minimal, Warm, Hotel, Airbnb, Tech, Kids
+- **🎨 Custom accent colors** — Match your brand with the built-in color picker
 - **QR code auto-generated** — Guests scan with their phone camera, connect in 2 seconds
 - **100% offline** — Your password never leaves your browser
-- **Print-optimized** — CSS print media queries for clean output, no wasted ink
-- **PNG download** — Save as image for digital use
+- **Print-optimized / PDF export** — Clean print output with "Save as PDF" button
+- **PNG download** — Save as image for digital sharing
+- **Dark mode** — Easy on the eyes, system preference auto-detection
+- **Welcome message** — Add a personalized note (up to 200 chars) + additional instructions
 - **Single HTML file** — No server, no dependencies, no build step
 
 ## Screenshots
