@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WifiCard v14.0 -->
+<!-- WifiCard v15.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -710,6 +710,28 @@ body {
   font-size: 11px; color: var(--color-text-secondary);
   display: flex; align-items: center;
   padding: 0 4px; user-select: none;
+}
+
+/* v15: Orientation toggle */
+.orientation-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.orientation-btn:hover { border-color: var(--color-accent); color: var(--color-text); }
+.orientation-btn--active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-weight: 600;
 }
 
 /* v11: breathing shadow when idle */
@@ -2782,6 +2804,15 @@ body {
         </div>
       </div>
 
+      <!-- v15: Card Orientation Toggle -->
+      <div class="qr-ec-field">
+        <label>Orientation</label>
+        <div style="display:flex;gap:8px">
+          <button type="button" id="orientLandscape" class="orientation-btn orientation-btn--active" aria-pressed="true" aria-label="Landscape orientation">&#x25AD; Landscape</button>
+          <button type="button" id="orientPortrait" class="orientation-btn" aria-pressed="false" aria-label="Portrait orientation">&#x25AF; Portrait</button>
+        </div>
+      </div>
+
       <!-- v8: QR Error Correction Level -->
       <div class="qr-ec-field">
         <label for="qrErrorLevel">QR error correction</label>
@@ -3053,7 +3084,8 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
         note: noteInput.value,
         security: securitySelect.value,
         hidden: hiddenCheckbox.checked,
-        qrSize: document.getElementById('qrSizeSelect') ? document.getElementById('qrSizeSelect').value : '120'
+        qrSize: document.getElementById('qrSizeSelect') ? document.getElementById('qrSizeSelect').value : '120',
+        orientation: _cardOrientation
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       if (customAccentColor) {
@@ -4321,6 +4353,16 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
         document.documentElement.style.setProperty('--qr-size', saved.qrSize + 'px');
       }
     }
+    // v15: Restore orientation
+    if (saved.orientation && (saved.orientation === 'portrait' || saved.orientation === 'landscape')) {
+      _cardOrientation = saved.orientation;
+      if (saved.orientation === 'portrait') {
+        orientLandscapeBtn.classList.remove('orientation-btn--active');
+        orientPortraitBtn.classList.add('orientation-btn--active');
+        orientLandscapeBtn.setAttribute('aria-pressed', 'false');
+        orientPortraitBtn.setAttribute('aria-pressed', 'true');
+      }
+    }
     updateAccentColorUI();
   })();
 
@@ -4388,6 +4430,31 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     var h = Math.max(30, Math.min(300, parseInt(this.value) || 105));
     applyCardSize(Math.round(w * 2.55), Math.round(h * 2.55));
   });
+
+  // --- v15: Card Orientation Toggle ---
+  var _cardOrientation = 'landscape';
+  var orientLandscapeBtn = document.getElementById('orientLandscape');
+  var orientPortraitBtn = document.getElementById('orientPortrait');
+
+  function setOrientation(orient) {
+    _cardOrientation = orient;
+    var w = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-width')) || 378;
+    var h = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-height')) || 264;
+    // If switching to portrait and currently landscape (w > h), swap
+    if (orient === 'portrait' && w > h) {
+      applyCardSize(h, w);
+    } else if (orient === 'landscape' && h > w) {
+      applyCardSize(h, w);
+    }
+    orientLandscapeBtn.classList.toggle('orientation-btn--active', orient === 'landscape');
+    orientPortraitBtn.classList.toggle('orientation-btn--active', orient === 'portrait');
+    orientLandscapeBtn.setAttribute('aria-pressed', orient === 'landscape');
+    orientPortraitBtn.setAttribute('aria-pressed', orient === 'portrait');
+    saveSettings();
+  }
+
+  orientLandscapeBtn.addEventListener('click', function() { setOrientation('landscape'); });
+  orientPortraitBtn.addEventListener('click', function() { setOrientation('portrait'); });
 
   // --- v8: QR Error Correction Level ---
   var qrErrorLevelSelect = document.getElementById('qrErrorLevel');

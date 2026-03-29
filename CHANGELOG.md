@@ -1,5 +1,15 @@
 # WifiCard — Changelog
 
+## v15.0 (2026-03-29) — Card Orientation Toggle
+
+### Added
+- **Card orientation toggle** -- Portrait vs Landscape switch in the settings panel; swaps card width/height dimensions
+- Active orientation highlighted with accent color; persisted in localStorage
+- Accessible: aria-pressed states on both buttons
+- SW cache bumped to `wificard-v15.0`
+
+---
+
 ## v14.0 (2026-03-29) — Card Count Label in Print & QR Size Selector
 
 ### Added
