@@ -1,0 +1,2763 @@
+<!-- WifiCard v2.6 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WifiCard — WiFi QR Card Generator</title>
+<meta name="description" content="Generate beautiful WiFi cards with QR codes. Free, offline, no signup. For Airbnb, cafes, hotels and home.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="WifiCard — Beautiful WiFi Guest Cards">
+<meta property="og:description" content="Generate printable WiFi cards with QR codes. Free, offline, no server needed. Just print and share.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://wificard.io/og-image.png">
+<meta property="og:url" content="https://wificard.io">
+<meta property="og:site_name" content="WifiCard">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="WifiCard — Beautiful WiFi Guest Cards">
+<meta name="twitter:description" content="Generate printable WiFi cards with QR codes. Free, offline, no server.">
+<meta name="twitter:image" content="https://wificard.io/og-image.png">
+
+<!-- Author -->
+<meta name="author" content="OpenClaw">
+<link rel="canonical" href="https://wificard.io">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📶</text></svg>">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style>
+/* ============================================
+   CSS Custom Properties
+   ============================================ */
+:root {
+  --color-bg: #F7F8FA;
+  --color-surface: #FFFFFF;
+  --color-text: #1A1A2E;
+  --color-text-secondary: #6B7280;
+  --color-accent: #4F46E5;
+  --color-accent-hover: #4338CA;
+  --color-border: #E5E7EB;
+  --color-security-bg: #ECFDF5;
+  --color-security-border: #A7F3D0;
+  --color-security-text: #065F46;
+
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  --card-width: 378px;
+  --card-height: 264px;
+  --qr-size: 120px;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+}
+
+/* ============================================
+   Reset & Base
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* ============================================
+   Header
+   ============================================ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.header-logo svg {
+  color: var(--color-accent);
+}
+
+/* ============================================
+   Main Layout
+   ============================================ */
+.main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.workspace {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* ============================================
+   Form Panel
+   ============================================ */
+.form-panel {
+  width: 40%;
+  min-width: 300px;
+  background: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  padding: 32px;
+  flex-shrink: 0;
+}
+
+.form-panel h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--color-text);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group select {
+  width: 100%;
+  height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Input with icon */
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper .input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.input-wrapper input.has-icon {
+  padding-left: 44px;
+}
+
+/* Password toggle */
+.input-wrapper .toggle-pass-btn {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--color-text-secondary);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  transition: color var(--transition-fast);
+}
+
+.input-wrapper .toggle-pass-btn:hover {
+  color: var(--color-text);
+}
+
+/* Password field collapse animation */
+.password-field {
+  transition: max-height var(--transition-normal), opacity 0.2s ease, margin var(--transition-normal);
+  overflow: hidden;
+  max-height: 100px;
+  opacity: 1;
+}
+
+.password-field.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+}
+
+/* Toggle switch */
+.toggle-group {
+  margin-bottom: 16px;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.toggle-row label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-switch .slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #D1D5DB;
+  border-radius: 24px;
+  transition: background var(--transition-fast);
+}
+
+.toggle-switch .slider::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition-fast);
+}
+
+.toggle-switch input:checked + .slider {
+  background: var(--color-accent);
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(20px);
+}
+
+.toggle-switch input:focus-visible + .slider {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Divider between inputs and toggles */
+.form-divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 28px 0;
+}
+
+/* ============================================
+   Preview Panel
+   ============================================ */
+.preview-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* Card preview container — dotted pattern background */
+.card-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 320px;
+  background-image: radial-gradient(circle, #d1d5db 1px, transparent 1px);
+  background-size: 20px 20px;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+/* The actual card */
+.wifi-card {
+  width: var(--card-width);
+  height: var(--card-height);
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.wifi-card.fade-out {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+/* QR canvas animation */
+.wifi-card canvas {
+  transition: opacity 0.2s ease;
+}
+
+/* ============================================
+   Action Buttons
+   ============================================ */
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: background var(--transition-fast), transform 0.1s ease;
+  border: none;
+}
+
+.action-btn:active {
+  transform: scale(0.97);
+}
+
+.action-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.action-btn.primary {
+  background: var(--color-accent);
+  color: #FFFFFF;
+}
+
+.action-btn.primary:hover {
+  background: var(--color-accent-hover);
+}
+
+.action-btn.secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.action-btn.secondary:hover {
+  background: #F9FAFB;
+}
+
+/* ============================================
+   Template Selector
+   ============================================ */
+.template-section {
+  width: 100%;
+  max-width: 1120px;
+  margin: 24px auto 0;
+  padding: 0 24px;
+}
+
+.template-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 16px 0;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.template-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.template-thumb {
+  flex-shrink: 0;
+  width: 100px;
+  height: 70px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  opacity: 0.7;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+  scroll-snap-align: start;
+  position: relative;
+  overflow: hidden;
+  background: none;
+}
+
+.template-thumb:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.template-thumb:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.template-thumb.active {
+  opacity: 1;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  transform: scale(1);
+}
+
+.template-thumb-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.template-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-top: 6px;
+}
+
+.template-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   Security Badge
+   ============================================ */
+.security-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--color-security-bg);
+  border: 1px solid var(--color-security-border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-security-text);
+  line-height: 1.4;
+  max-width: 1120px;
+  margin: 24px auto;
+  animation: pulse-once 0.6s ease 1s 1;
+}
+
+.security-badge .badge-text span {
+  display: block;
+  color: #047857;
+  font-weight: 400;
+}
+
+@keyframes pulse-once {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.2); }
+}
+
+/* ============================================
+   Card Template Styles
+   ============================================ */
+
+/* --- Minimal --- */
+.card-minimal {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-family: var(--font-ui);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.card-minimal .card-body {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+  align-items: center;
+}
+
+.card-minimal .card-qr {
+  flex-shrink: 0;
+}
+
+.card-minimal .card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-minimal .card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.card-minimal .card-title svg { color: #111827; }
+
+.card-minimal .card-field-label {
+  font-size: 12px;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.card-minimal .card-field-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+.card-minimal .card-field-value.password {
+  font-size: 14px;
+  color: #6B7280;
+  font-weight: 400;
+}
+
+.card-minimal .card-field {
+  margin-bottom: 8px;
+}
+
+.card-minimal .card-footer {
+  border-top: 1px solid #E5E7EB;
+  padding-top: 10px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6B7280;
+  text-align: center;
+}
+
+.card-minimal .card-hidden-tag {
+  font-size: 11px;
+  color: #6B7280;
+  font-style: italic;
+}
+
+/* --- Warm --- */
+.card-warm {
+  background: #FDF6EC;
+  border: 2px solid #D7CCC8;
+  border-radius: 4px;
+  font-family: Georgia, "Times New Roman", serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.card-warm .card-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #5D4037;
+  margin-bottom: 4px;
+}
+
+.card-warm .card-title svg { color: #D84315; }
+
+.card-warm .card-divider {
+  width: 60px;
+  border: none;
+  border-top: 1px solid #D7CCC8;
+  margin: 8px auto 12px;
+}
+
+.card-warm .card-field {
+  margin-bottom: 4px;
+}
+
+.card-warm .card-field-label {
+  font-size: 13px;
+  color: #8D6E63;
+}
+
+.card-warm .card-field-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #5D4037;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 280px;
+  display: inline-block;
+}
+
+.card-warm .card-field-value.password {
+  font-size: 14px;
+  font-weight: 400;
+  color: #8D6E63;
+}
+
+.card-warm .card-qr {
+  margin: 10px 0 6px;
+}
+
+.card-warm .card-footer {
+  font-size: 12px;
+  font-style: italic;
+  color: #8D6E63;
+}
+
+.card-warm .card-hidden-tag {
+  font-size: 11px;
+  color: #8D6E63;
+  font-style: italic;
+}
+
+/* --- Hotel --- */
+.card-hotel {
+  background: #1A1A2E;
+  border: 1px solid #D4AF37;
+  border-radius: 4px;
+  font-family: Georgia, "Palatino Linotype", serif;
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  color: #D4AF37;
+}
+
+.card-hotel .card-body {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+  align-items: center;
+}
+
+.card-hotel .card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-hotel .card-qr {
+  flex-shrink: 0;
+}
+
+.card-hotel .card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #D4AF37;
+  margin-bottom: 4px;
+}
+
+.card-hotel .card-title svg { color: #D4AF37; }
+
+.card-hotel .card-title-underline {
+  width: 40px;
+  border: none;
+  border-top: 2px solid #D4AF37;
+  margin-bottom: 14px;
+}
+
+.card-hotel .card-field {
+  margin-bottom: 6px;
+}
+
+.card-hotel .card-field-label {
+  font-size: 11px;
+  color: #C0C0C0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-hotel .card-field-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #D4AF37;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 170px;
+}
+
+.card-hotel .card-field-value.password {
+  font-size: 14px;
+  color: #C0C0C0;
+  font-weight: 400;
+}
+
+.card-hotel .card-footer {
+  border-top: 1px dashed rgba(212, 175, 55, 0.3);
+  padding-top: 10px;
+  margin-top: 12px;
+  text-align: center;
+  font-size: 10px;
+  color: #C0C0C0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.card-hotel .card-hidden-tag {
+  font-size: 10px;
+  color: #C0C0C0;
+  font-style: italic;
+}
+
+/* --- Airbnb --- */
+.card-airbnb {
+  background: #FFFFFF;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-ui);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card-airbnb .card-accent-bar {
+  height: 6px;
+  background: #FF5A5F;
+}
+
+.card-airbnb .card-content {
+  padding: 20px 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-airbnb .card-welcome {
+  font-size: 20px;
+  font-weight: 700;
+  color: #FF5A5F;
+  margin-bottom: 2px;
+}
+
+.card-airbnb .card-subtitle {
+  font-size: 14px;
+  color: #767676;
+  margin-bottom: 14px;
+}
+
+.card-airbnb .card-body {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex: 1;
+}
+
+.card-airbnb .card-qr {
+  flex-shrink: 0;
+}
+
+.card-airbnb .card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-airbnb .card-field {
+  margin-bottom: 6px;
+}
+
+.card-airbnb .card-field-label {
+  font-size: 12px;
+  color: #767676;
+}
+
+.card-airbnb .card-field-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #484848;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+.card-airbnb .card-field-value.password {
+  font-size: 14px;
+  color: #767676;
+  font-weight: 400;
+}
+
+.card-airbnb .card-footer {
+  font-size: 12px;
+  color: #767676;
+  margin-top: 8px;
+  line-height: 1.3;
+}
+
+.card-airbnb .card-hidden-tag {
+  font-size: 11px;
+  color: #767676;
+  font-style: italic;
+}
+
+/* --- Tech --- */
+.card-tech {
+  background: #0D1117;
+  border: 1px solid #30363D;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px;
+  color: #C9D1D9;
+}
+
+.card-tech .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.card-tech .card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #39D353;
+}
+
+.card-tech .card-title svg { color: #58A6FF; }
+
+.card-tech .card-divider {
+  border: none;
+  border-top: 1px solid #30363D;
+  margin: 8px 0 14px;
+}
+
+.card-tech .card-field {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  align-items: baseline;
+}
+
+.card-tech .card-field-label {
+  font-size: 11px;
+  color: #58A6FF;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  min-width: 50px;
+}
+
+.card-tech .card-field-value {
+  font-size: 15px;
+  color: #C9D1D9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.card-tech .card-field-value.password {
+  color: #8B949E;
+  font-size: 14px;
+}
+
+.card-tech .card-qr-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.card-tech .card-qr {
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.1);
+}
+
+.card-tech .card-footer {
+  font-size: 12px;
+  color: #39D353;
+}
+
+.card-tech .card-hidden-tag {
+  font-size: 11px;
+  color: #8B949E;
+}
+
+/* --- Kids --- */
+.card-kids {
+  background: #FFF8E1;
+  border: 3px solid #FF9800;
+  border-radius: 16px;
+  font-family: var(--font-ui);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 24px;
+  position: relative;
+}
+
+/* Subtle dot pattern for kids */
+.card-kids::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, #FFE0B2 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.3;
+  border-radius: 13px;
+  pointer-events: none;
+}
+
+.card-kids > * {
+  position: relative;
+}
+
+.card-kids .card-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #E91E63;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-kids .card-field {
+  margin-bottom: 4px;
+}
+
+.card-kids .card-field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5D4037;
+  display: inline;
+}
+
+.card-kids .card-field-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #5D4037;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 260px;
+  display: inline;
+}
+
+.card-kids .card-field-value.password {
+  font-weight: 400;
+}
+
+.card-kids .card-qr {
+  margin: 8px 0 6px;
+}
+
+.card-kids .card-footer {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.card-kids .card-hidden-tag {
+  font-size: 11px;
+  color: #8D6E63;
+  font-style: italic;
+}
+
+/* ============================================
+   Generate Password Button
+   ============================================ */
+.password-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.password-row .input-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.generate-btn:hover {
+  background: #F3F4F6;
+  border-color: var(--color-accent);
+}
+
+.generate-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.generate-btn.generated {
+  background: #ECFDF5;
+  border-color: #A7F3D0;
+  color: #065F46;
+}
+
+/* ============================================
+   Welcome Message Field
+   ============================================ */
+.welcome-field {
+  margin-bottom: 20px;
+}
+
+.welcome-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.welcome-field input {
+  width: 100%;
+  height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.welcome-field input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.welcome-char-count {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* ============================================
+   Welcome Text on Card
+   ============================================ */
+.card-welcome-text {
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  padding: 6px 12px 4px;
+  line-height: 1.3;
+}
+
+.card-minimal .card-welcome-text { color: #6B7280; text-align: left; padding: 0 0 8px; }
+.card-warm .card-welcome-text { color: #8D6E63; font-style: italic; }
+.card-hotel .card-welcome-text { color: #C0C0C0; letter-spacing: 0.5px; }
+.card-airbnb .card-welcome-text { color: #6B6B6B; text-align: left; padding: 0 0 6px; }
+.card-airbnb .card-welcome { color: #6B6B6B; }
+.card-tech .card-welcome-text { color: #8B949E; font-family: var(--font-mono); text-align: left; padding: 0 0 8px; }
+.card-kids .card-welcome-text { color: #E91E63; font-weight: 700; font-size: 14px; }
+
+/* ============================================
+   Clear Settings Button
+   ============================================ */
+.clear-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color var(--transition-fast);
+  margin-left: 8px;
+}
+
+.clear-settings-btn:hover {
+  color: var(--color-text);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 768px) {
+  .workspace {
+    flex-direction: column;
+  }
+
+  .form-panel {
+    width: 100%;
+    min-width: 0;
+    padding: 20px;
+  }
+
+  .preview-panel {
+    width: 100%;
+  }
+
+  .card-container {
+    min-height: 200px;
+    padding: 16px;
+  }
+
+  .wifi-card {
+    transform-origin: top center;
+  }
+
+  .template-section {
+    padding: 0 16px;
+  }
+
+  .main {
+    padding: 16px;
+  }
+
+  .security-badge {
+    margin: 16px;
+  }
+}
+
+/* Scale card down on small screens */
+@media (max-width: 430px) {
+  .wifi-card {
+    transform: scale(0.82);
+    transform-origin: top center;
+  }
+
+  .card-container {
+    max-width: 100%;
+    overflow: hidden;
+    min-height: 240px;
+  }
+}
+
+/* Very small screens (320px) */
+@media (max-width: 360px) {
+  .wifi-card {
+    transform: scale(0.72);
+    transform-origin: top center;
+  }
+
+  .card-container {
+    max-width: 100%;
+    overflow: hidden;
+    min-height: 210px;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+  body > *:not(.main),
+  .header,
+  .template-section,
+  .security-badge,
+  .form-panel,
+  .actions,
+  .clear-settings-btn {
+    display: none !important;
+  }
+
+  .card-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: none !important;
+    background-image: none !important;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .card-container,
+  .card-container *,
+  .wifi-card,
+  .wifi-card * {
+    visibility: visible !important;
+  }
+
+  .wifi-card {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  @page {
+    margin: 1cm;
+    size: auto;
+  }
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   Onboarding Overlay
+   ============================================ */
+.wificard-onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(247, 248, 250, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  transform: scale(0.95);
+  animation: wificard-onb-in 400ms ease forwards;
+  padding: 24px;
+}
+@keyframes wificard-onb-in {
+  to { opacity: 1; transform: scale(1); }
+}
+.wificard-onboarding-overlay.hiding {
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+.wificard-onb-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 48px 36px 40px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.wificard-onb-icon {
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.wificard-onb-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1A1A2E;
+  letter-spacing: -0.02em;
+}
+.wificard-onb-subtitle {
+  font-size: 16px;
+  color: #6B7280;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.wificard-onb-features {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  margin: 12px 0 20px;
+}
+.wificard-onb-features li {
+  font-size: 15px;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #F7F8FA;
+  border-radius: 12px;
+}
+.wificard-onb-features li span.icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.wificard-onb-cta {
+  font-family: var(--font-ui);
+  font-size: 17px;
+  font-weight: 600;
+  color: #FFFFFF;
+  background: #4F46E5;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 36px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+  width: 100%;
+  max-width: 280px;
+}
+.wificard-onb-cta:hover {
+  background: #4338CA;
+  transform: scale(1.02);
+}
+.wificard-onb-cta:active {
+  transform: scale(0.97);
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     Onboarding Overlay
+     ============================================ -->
+<div id="wificard-onboarding" class="wificard-onboarding-overlay" style="display:none;">
+  <div class="wificard-onb-card">
+    <div class="wificard-onb-icon" aria-hidden="true">&#x1F4F6;</div>
+    <h1 class="wificard-onb-title">WifiCard</h1>
+    <p class="wificard-onb-subtitle">Beautiful WiFi cards for your guests. Free, private, no account needed.</p>
+    <ul class="wificard-onb-features">
+      <li><span class="icon" aria-hidden="true">&#x1F4F1;</span> Scan QR — connect instantly</li>
+      <li><span class="icon" aria-hidden="true">&#x1F3A8;</span> 6 beautiful templates</li>
+      <li><span class="icon" aria-hidden="true">&#x1F512;</span> Your data never leaves your device</li>
+    </ul>
+    <button class="wificard-onb-cta" id="wificard-onb-start">Create Your Card &#x2192;</button>
+  </div>
+</div>
+
+<!-- ============================================
+     Header
+     ============================================ -->
+<header class="header">
+  <a href="#" class="header-logo" aria-label="WifiCard home">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <path d="M7 12a5 5 0 0 1 10 0"/>
+      <path d="M9 12a3 3 0 0 1 6 0"/>
+      <circle cx="12" cy="12" r="0.5" fill="currentColor"/>
+    </svg>
+    WifiCard
+  </a>
+</header>
+
+<!-- ============================================
+     Main Workspace
+     ============================================ -->
+<main class="main">
+  <div class="workspace">
+
+    <!-- Form Panel -->
+    <section class="form-panel" aria-label="WiFi settings">
+      <h2>WiFi Details</h2>
+
+      <!-- SSID -->
+      <div class="form-group">
+        <label for="ssid">Network name (SSID)</label>
+        <div class="input-wrapper">
+          <span class="input-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
+          </span>
+          <input type="text" id="ssid" class="has-icon" placeholder="MyWiFi" maxlength="32" autocomplete="off" aria-describedby="ssid-hint" value="MyWiFi">
+          <span id="ssid-hint" class="sr-only">Enter your WiFi network name</span>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group password-field" id="passwordField">
+        <label for="password">Password</label>
+        <div class="password-row">
+          <div class="input-wrapper">
+            <input type="text" id="password" placeholder="Enter WiFi password" autocomplete="off" aria-describedby="password-hint" value="password123">
+            <button type="button" class="toggle-pass-btn" id="togglePassBtn" aria-label="Toggle password visibility">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="eyeIcon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <span id="password-hint" class="sr-only">Enter your WiFi password</span>
+          </div>
+          <button type="button" class="generate-btn" id="generatePassBtn" title="Generate a secure WiFi password" aria-label="Generate a secure WiFi password">&#x1F511; Generate</button>
+        </div>
+      </div>
+
+      <!-- Welcome Message -->
+      <div class="welcome-field">
+        <label for="welcomeMsg">Welcome message <span style="font-weight:400;color:var(--color-text-secondary);">(optional)</span></label>
+        <input type="text" id="welcomeMsg" placeholder="Welcome to our home!" maxlength="50" autocomplete="off" aria-describedby="welcome-hint">
+        <div class="welcome-char-count" aria-live="polite"><span id="welcomeCharCount">0</span>/50</div>
+        <span id="welcome-hint" class="sr-only">Optional welcome text shown on the card above the QR code</span>
+      </div>
+
+      <!-- Security -->
+      <div class="form-group">
+        <label for="security">Security</label>
+        <select id="security" aria-describedby="security-hint">
+          <option value="WPA" selected>WPA/WPA2</option>
+          <option value="WEP">WEP</option>
+          <option value="nopass">None</option>
+        </select>
+        <span id="security-hint" class="sr-only">Select your WiFi security type</span>
+      </div>
+
+      <hr class="form-divider">
+
+      <!-- Toggles -->
+      <div class="toggle-group">
+        <div class="toggle-row">
+          <label for="hiddenNetwork">Hidden network</label>
+          <div class="toggle-switch">
+            <input type="checkbox" id="hiddenNetwork" role="switch" aria-label="Hidden network">
+            <span class="slider" aria-hidden="true"></span>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <label for="showPassword">Show password on card</label>
+          <div class="toggle-switch">
+            <input type="checkbox" id="showPassword" role="switch" aria-label="Show password on card" checked>
+            <span class="slider" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preview Panel -->
+    <section class="preview-panel" aria-label="Card preview">
+      <div class="card-container">
+        <div class="wifi-card" id="wifiCard" aria-live="off" aria-label="WiFi card preview">
+          <!-- Card content rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="action-btn primary" id="btnPrint" aria-label="Print WiFi card">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print
+        </button>
+        <button class="action-btn secondary" id="btnDownload" aria-label="Download WiFi card as PNG">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PNG
+        </button>
+        <button class="action-btn secondary" id="btnDownloadSVG" aria-label="Download WiFi card as SVG">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download SVG
+        </button>
+        <button class="action-btn secondary" id="btnCopyWifi" aria-label="Copy WiFi network name and password">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+        <button class="action-btn secondary" id="btnShare" aria-label="Share WiFi card" style="display:none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Share
+        </button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Template Selector -->
+<nav class="template-section" aria-label="Card templates">
+  <div class="template-scroll" role="radiogroup" aria-label="Card template">
+    <div class="template-item">
+      <button class="template-thumb active" role="radio" aria-checked="true" aria-label="Minimal template" data-template="minimal" tabindex="0">
+        <div class="template-thumb-inner" style="background:#fff;border:1px solid #E5E7EB;color:#111827;">Minimal</div>
+      </button>
+      <span class="template-label">Minimal</span>
+    </div>
+    <div class="template-item">
+      <button class="template-thumb" role="radio" aria-checked="false" aria-label="Warm template" data-template="warm" tabindex="-1">
+        <div class="template-thumb-inner" style="background:#FDF6EC;border:2px solid #D7CCC8;color:#5D4037;">Warm</div>
+      </button>
+      <span class="template-label">Warm</span>
+    </div>
+    <div class="template-item">
+      <button class="template-thumb" role="radio" aria-checked="false" aria-label="Hotel template" data-template="hotel" tabindex="-1">
+        <div class="template-thumb-inner" style="background:#1A1A2E;border:1px solid #D4AF37;color:#D4AF37;">Hotel</div>
+      </button>
+      <span class="template-label">Hotel</span>
+    </div>
+    <div class="template-item">
+      <button class="template-thumb" role="radio" aria-checked="false" aria-label="Airbnb template" data-template="airbnb" tabindex="-1">
+        <div class="template-thumb-inner" style="background:#fff;border-top:4px solid #FF5A5F;color:#484848;box-shadow:0 1px 4px rgba(0,0,0,0.1);">Airbnb</div>
+      </button>
+      <span class="template-label">Airbnb</span>
+    </div>
+    <div class="template-item">
+      <button class="template-thumb" role="radio" aria-checked="false" aria-label="Tech template" data-template="tech" tabindex="-1">
+        <div class="template-thumb-inner" style="background:#0D1117;border:1px solid #30363D;color:#58A6FF;">Tech</div>
+      </button>
+      <span class="template-label">Tech</span>
+    </div>
+    <div class="template-item">
+      <button class="template-thumb" role="radio" aria-checked="false" aria-label="Kids template" data-template="kids" tabindex="-1">
+        <div class="template-thumb-inner" style="background:#FFF8E1;border:3px solid #FF9800;color:#E91E63;border-radius:12px;">Kids</div>
+      </button>
+      <span class="template-label">Kids</span>
+    </div>
+  </div>
+</nav>
+
+<!-- Security Badge -->
+<footer class="security-badge" role="contentinfo" style="max-width:1072px;margin:24px auto;padding-left:24px;padding-right:24px;">
+  <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  <div class="badge-text">
+    Your password never leaves your browser.
+    <span>Everything runs locally on your device.</span>
+  </div>
+  <button type="button" class="clear-settings-btn" id="clearSettingsBtn" title="Clear saved settings">&#x2715; Clear saved</button>
+</footer>
+
+<script>
+/* ==========================================================================
+   QR Code Generator
+   Minimal QR encoder based on Kazuhiko Arase's qrcode-generator (MIT license).
+   Inlined and minified for offline use.
+   ========================================================================== */
+var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t,i=e[r],s=null,l=0,u=null,f=new Array,c={},h=function(e,t,r,n){for(var o=0;o<e;o+=1)for(var a=0;a<t;a+=1)s[o+r][a+n]=-1},d=function(e,t){for(var r=-1;r<=7;r+=1)if(!(e+r<=-1||l<=e+r))for(var n=-1;n<=7;n+=1)t+n<=-1||l<=t+n||(0<=r&&r<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==r||6==r)||2<=r&&r<=4&&2<=n&&n<=4?s[e+r][t+n]=!0:s[e+r][t+n]=!1)},g=function(){for(var e=0,t=0,r=0;r<8;r+=1){p();for(var n=0,o=0;o<l;o+=1)for(var a=0;a<l;a+=1){for(var i=!0,u=!1,f=-1;f<=1;f+=1)if(!(o+f<0||l<=o+f))for(var c=-1;c<=1;c+=1)a+c<0||l<=a+c||(0!=f||0!=c?s[o+f][a+c]==s[o][a]&&(u=!0):i&&(s[o][a]?u=!0:i=!1));u&&(n+=1)}(0==r||e>n)&&(e=n,t=r)}p(),v(t)},p=function(){s=function(e){for(var t=new Array(e),r=0;r<e;r+=1){t[r]=new Array(e);for(var n=0;n<e;n+=1)t[r][n]=null}return t}(l=4*a+17);for(var e=0;e<l;e+=1)for(var t=0;t<l;t+=1)s[e][t]=null;d(0,0),d(l-7,0),d(0,l-7),h(1,9,l-8,8),h(9,1,8,l-8),h(9,9,8,8);for(e=0;e<l;e+=1)null==s[e][6]&&(s[e][6]=e%2==0);for(t=0;t<l;t+=1)null==s[6][t]&&(s[6][t]=t%2==0);for(var r=x.getPatternPosition(a),n=0;n<r.length;n+=1)for(var o=0;o<r.length;o+=1){var i=r[n],u=r[o];if(null==s[i][u])for(var f=-2;f<=2;f+=1)for(var c=-2;c<=2;c+=1)-2==f||2==f||-2==c||2==c||0==f&&0==c?s[i+f][u+c]=!0:s[i+f][u+c]=!1}},v=function(e){for(var t=x.getBCHTypeInfo(i<<3|e),r=0;r<15;r+=1){var n=!((t>>r&1)==0);r<6?s[r][8]=n:r<8?s[r+1][8]=n:s[l-15+r][8]=n}for(r=0;r<15;r+=1){n=!((t>>r&1)==0);r<8?s[8][l-r-1]=n:r<9?s[8][15-r-1+1]=n:s[8][15-r-1]=n}s[l-8][8]=!0;for(var o=x.getBCHTypeNumber(a),r=0;r<18;r+=1){n=!((o>>r&1)==0);s[Math.floor(r/3)][r%3+l-8-3]=n}for(r=0;r<18;r+=1){n=!((o>>r&1)==0);s[r%3+l-8-3][Math.floor(r/3)]=n}},m=function(e,t){for(var r=e.getLength(),n=-8&(4*a+17)*(4*a+17),o=new y(r*8+4),i=0;i<r;i+=1){var u=e.getByte(i);o.put(u,8)}var f=x.getMaxLength(a,0,t);if(o.getLengthInBits()>f)throw"code length overflow: "+o.getLengthInBits()+">"+f;for(o.getLengthInBits()+4<=f&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=f||(o.put(n,8),o.getLengthInBits()>=f));)o.put(o,8);return w(o)},w=function(e){for(var t=x.getRSBlocks(a,i),r=0,n=0,o=0,s=new Array(t.length),l=new Array(t.length),u=0;u<t.length;u+=1){var f=t[u][0],c=t[u][1]-f;n=Math.max(n,f),o=Math.max(o,c);s[u]=new Array(f);for(var h=0;h<s[u].length;h+=1)s[u][h]=255&e.getBuffer()[h+r];r+=f;var d=x.getErrorCorrectPolynomial(c),g=new b(s[u],d.getLength()-1),p=g.mod(d);l[u]=new Array(d.getLength()-1);for(h=0;h<l[u].length;h+=1){var v=h+p.getLength()-l[u].length;l[u][h]=v>=0?p.getAt(v):0}}var m=new Array(r+o*t.length),w=0;for(h=0;h<n;h+=1)for(u=0;u<t.length;u+=1)h<s[u].length&&(m[w]=s[u][h],w+=1);for(h=0;h<o;h+=1)for(u=0;u<t.length;u+=1)h<l[u].length&&(m[w]=l[u][h],w+=1);return m},k=function(e,t){for(var r=a<<1|0,n=0;n<l;n+=1)for(var o=0;o<l;o+=1){if(null==s[n][o]){var i=!1;t<e.length&&(i=(e[t]>>>7-t%8&1)==1);var u=x.getMaskFunction(r%8);u(n,o)&&(i=!i),s[n][o]=i,t+=1}}return t};return c.addData=function(e){f.push({mode:4,data:e})},c.getModuleCount=function(){return l},c.isDark=function(e,t){return s[e][t]},c.make=function(){if(a<1){for(a=1;a<40;a++){for(var e=0,t=x.getRSBlocks(a,i),r=0;r<t.length;r++)e+=t[r][0];var n=new y(0);n.put(4,4);for(r=0;r<f.length;r++){var o=f[r];n.put(o.data.length,x.getLengthBits(4,a));for(var s=0;s<o.data.length;s++)n.put(o.data.charCodeAt(s),8)}if(n.getLengthInBits()<=8*e)break}}p();var l=function(){for(var e=new y(0),t=0;t<f.length;t+=1){var r=f[t];e.put(4,4),e.put(r.data.length,x.getLengthBits(4,a));for(var n=0;n<r.data.length;n+=1)e.put(r.data.charCodeAt(n),8)}return e}(),u=m(l,i);g(),v(0),k(u,0)},c.createSvgTag=function(e,t){e=e||2,t=t||e*4;var r="";r+='<svg width="'+(l*e+2*t)+'" height="'+(l*e+2*t)+'"';r+=' viewBox="0 0 '+(l*e+2*t)+" "+(l*e+2*t)+'"';r+=' xmlns="http://www.w3.org/2000/svg">';r+='<rect width="100%" height="100%" fill="white"/>';for(var n=0;n<l;n+=1)for(var o=0;o<l;o+=1)s[n][o]&&(r+='<rect x="'+(o*e+t)+'" y="'+(n*e+t)+'" width="'+e+'" height="'+e+'" fill="black"/>');return r+="</svg>"},c.renderTo2dContext=function(e,t,r,n,o,a){t=t||2,r=r||0,n=n||0,o=o||"#000000",a=a||"#ffffff";var i=l*t;e.fillStyle=a,e.fillRect(r,n,i,i);e.fillStyle=o;for(var u=0;u<l;u+=1)for(var f=0;f<l;f+=1)s[u][f]&&e.fillRect(f*t+r,u*t+n,t,t)},c};var r=function(e){for(var t=0,r=0,n=0;n<e.length;n++){var o=e.charCodeAt(n);o<128?t+=1:o<2048?t+=2:o<65536?t+=3:t+=4}return t},x={getPatternPosition:function(e){return[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]][e]},getBCHTypeInfo:function(e){for(var t=e<<10;x._bchDigit(t)-x._bchDigit(1335)>=0;)t^=1335<<x._bchDigit(t)-x._bchDigit(1335);return(e<<10|t)^21522},getBCHTypeNumber:function(e){for(var t=e<<12;x._bchDigit(t)-x._bchDigit(7973)>=0;)t^=7973<<x._bchDigit(t)-x._bchDigit(7973);return e<<12|t},_bchDigit:function(e){for(var t=0;0!=e;)t+=1,e>>>=1;return t},getRSBlocks:function(e,t){var r=x._rsBlockTable[4*(e-1)+t];if(void 0===r)throw"bad rs block @ ver:"+e+"/ecl:"+t;for(var n=[],o=0;o<r.length;o+=2)n.push([r[o+1]-r[o],r[o]]);return n},_rsBlockTable:[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],getMaxLength:function(e,t,r){var n=x._rsBlockTable[4*(e-1)+r];if(!n)return 0;for(var o=0,a=0;a<n.length;a+=2)o+=n[a+1]-n[a];var i=o*8,s=4+x.getLengthBits(t,e)+0;return Math.floor((i-s)/8)},getLengthBits:function(e,t){return t>=1&&t<10?8:t<27?16:16},getErrorCorrectPolynomial:function(e){for(var t=new b([1],0),r=0;r<e;r+=1)t=t.multiply(new b([1,_.gexp(r)],0));return t},getMaskFunction:function(e){switch(e){case 0:return function(e,t){return(e+t)%2==0};case 1:return function(e){return e%2==0};case 2:return function(e,t){return t%3==0};case 3:return function(e,t){return(e+t)%3==0};case 4:return function(e,t){return(Math.floor(e/2)+Math.floor(t/3))%2==0};case 5:return function(e,t){return e*t%2+e*t%3==0};case 6:return function(e,t){return(e*t%2+e*t%3)%2==0};case 7:return function(e,t){return(e*t%3+(e+t)%2)%2==0}}}},b=function(e,t){if(void 0===e.length)throw e.length+"/"+t;for(var r=0;r<e.length&&0==e[r];)r+=1;this._num=new Array(e.length-r+t);for(var n=0;n<e.length-r;n+=1)this._num[n]=e[n+r]};b.prototype={getAt:function(e){return this._num[e]},getLength:function(){return this._num.length},multiply:function(e){for(var t=new Array(this.getLength()+e.getLength()-1),r=0;r<this.getLength();r+=1)for(var n=0;n<e.getLength();n+=1)t[r+n]^=_.gexp(_.glog(this.getAt(r))+_.glog(e.getAt(n)));return new b(t,0)},mod:function(e){if(this.getLength()-e.getLength()<0)return this;for(var t=_.glog(this.getAt(0))-_.glog(e.getAt(0)),r=new Array(this.getLength()),n=0;n<this.getLength();n+=1)r[n]=this.getAt(n);for(n=0;n<e.getLength();n+=1)r[n]^=_.gexp(_.glog(e.getAt(n))+t);return new b(r,0).mod(e)}};var _={_EXP_TABLE:new Array(256),_LOG_TABLE:new Array(256),glog:function(e){if(e<1)throw"glog("+e+")";return _._LOG_TABLE[e]},gexp:function(e){for(;e<0;)e+=255;for(;e>=256;)e-=255;return _._EXP_TABLE[e]}};!function(){for(var e=0;e<8;e+=1)_._EXP_TABLE[e]=1<<e;for(e=8;e<256;e+=1)_._EXP_TABLE[e]=_._EXP_TABLE[e-4]^_._EXP_TABLE[e-5]^_._EXP_TABLE[e-6]^_._EXP_TABLE[e-8];for(e=0;e<255;e+=1)_._LOG_TABLE[_._EXP_TABLE[e]]=e}();var y=function(e){var t=[],r=0;this.getBuffer=function(){return t},this.getAt=function(e){var r=Math.floor(e/8);return(t[r]>>>7-e%8&1)==1},this.put=function(e,t){for(var n=0;n<t;n+=1)this.putBit((e>>>t-n-1&1)==1)},this.getLengthInBits=function(){return r},this.putBit=function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return function(e,r){r=r||"M";var n=t(-1,r);return n.addData(e),n.make(),n}}();
+
+/* ==========================================================================
+   WifiCard Application
+   ========================================================================== */
+(function() {
+  'use strict';
+
+  // --- DOM References ---
+  var ssidInput = document.getElementById('ssid');
+  var passwordInput = document.getElementById('password');
+  var securitySelect = document.getElementById('security');
+  var hiddenCheckbox = document.getElementById('hiddenNetwork');
+  var showPassCheckbox = document.getElementById('showPassword');
+  var togglePassBtn = document.getElementById('togglePassBtn');
+  var passwordField = document.getElementById('passwordField');
+  var wifiCardEl = document.getElementById('wifiCard');
+  var btnPrint = document.getElementById('btnPrint');
+  var btnDownload = document.getElementById('btnDownload');
+  var btnShare = document.getElementById('btnShare');
+  var templateThumbs = document.querySelectorAll('.template-thumb');
+  var welcomeInput = document.getElementById('welcomeMsg');
+  var welcomeCharCount = document.getElementById('welcomeCharCount');
+  var generatePassBtn = document.getElementById('generatePassBtn');
+  var clearSettingsBtn = document.getElementById('clearSettingsBtn');
+  var btnDownloadSVG = document.getElementById('btnDownloadSVG');
+  var btnCopyWifi = document.getElementById('btnCopyWifi');
+
+  // --- State ---
+  var currentTemplate = 'minimal';
+  var debounceTimer = null;
+  var STORAGE_KEY = 'wificard_settings';
+
+  // --- Secure Password Generator ---
+  function generateSecurePassword(length) {
+    length = length || 16;
+    var charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=';
+    var charLen = charset.length;
+    var result = '';
+    var arr = new Uint32Array(length);
+    crypto.getRandomValues(arr);
+    for (var i = 0; i < length; i++) {
+      // Rejection sampling for uniform distribution
+      var maxValid = Math.floor(4294967296 / charLen) * charLen;
+      var val = arr[i];
+      while (val >= maxValid) {
+        var tmp = new Uint32Array(1);
+        crypto.getRandomValues(tmp);
+        val = tmp[0];
+      }
+      result += charset[val % charLen];
+    }
+    return result;
+  }
+
+  // --- localStorage helpers ---
+  function saveSettings() {
+    try {
+      var data = {
+        network: ssidInput.value,
+        password: passwordInput.value,
+        template: currentTemplate,
+        welcome: welcomeInput.value
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) { /* Safari Private Mode or quota exceeded */ }
+  }
+
+  function loadSettings() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) { return null; }
+  }
+
+  function clearSettings() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  }
+
+  // --- WiFi QR String ---
+  // Escape special characters per WiFi QR spec
+  function escapeWifi(str) {
+    return str.replace(/\\/g, '\\\\')
+              .replace(/;/g, '\\;')
+              .replace(/,/g, '\\,')
+              .replace(/"/g, '\\"')
+              .replace(/:/g, '\\:');
+  }
+
+  function buildWifiString() {
+    var ssid = ssidInput.value || '';
+    var password = passwordInput.value || '';
+    var security = securitySelect.value;
+    var hidden = hiddenCheckbox.checked;
+
+    var s = 'WIFI:T:' + security + ';S:' + escapeWifi(ssid) + ';';
+    if (security !== 'nopass') {
+      s += 'P:' + escapeWifi(password) + ';';
+    }
+    s += 'H:' + (hidden ? 'true' : 'false') + ';;';
+    return s;
+  }
+
+  // --- QR Rendering to Canvas ---
+  function renderQR(canvasEl, text, size, fg, bg) {
+    var qr = qrcode(text, 'M');
+    var ctx = canvasEl.getContext('2d');
+    var moduleCount = qr.getModuleCount();
+    canvasEl.width = size;
+    canvasEl.height = size;
+    var cellSize = size / moduleCount;
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = fg;
+    for (var r = 0; r < moduleCount; r++) {
+      for (var c = 0; c < moduleCount; c++) {
+        if (qr.isDark(r, c)) {
+          ctx.fillRect(Math.round(c * cellSize), Math.round(r * cellSize),
+                       Math.ceil(cellSize), Math.ceil(cellSize));
+        }
+      }
+    }
+  }
+
+  // --- SVG Icons (inline) ---
+  var wifiSVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>';
+
+  // --- Card HTML Renderers ---
+  function getValues() {
+    var ssid = ssidInput.value || '';
+    var password = passwordInput.value || '';
+    var security = securitySelect.value;
+    var hidden = hiddenCheckbox.checked;
+    var showPass = showPassCheckbox.checked;
+    var welcome = welcomeInput.value || '';
+    var displaySsid = ssid ? escapeHtml(ssid) : '<span style="opacity:0.5">Network Name</span>';
+    var displayPass = '';
+
+    if (security === 'nopass') {
+      displayPass = '';
+    } else if (showPass && password) {
+      displayPass = escapeHtml(password);
+    } else {
+      displayPass = '<em style="opacity:0.7">Scan QR to connect</em>';
+    }
+
+    return {
+      ssid: ssid,
+      displaySsid: displaySsid,
+      password: password,
+      displayPass: displayPass,
+      security: security,
+      hidden: hidden,
+      showPass: showPass,
+      welcome: welcome,
+      displayWelcome: welcome ? escapeHtml(welcome) : ''
+    };
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function hiddenTag(cls) {
+    return '<span class="' + cls + '">(Hidden network)</span>';
+  }
+
+  function welcomeHtml(v) {
+    if (!v.displayWelcome) return '';
+    return '<div class="card-welcome-text">' + v.displayWelcome + '</div>';
+  }
+
+  // Each template returns its HTML and QR config
+  var templates = {
+    minimal: function(v) {
+      return {
+        className: 'card-minimal',
+        qr: { fg: '#111827', bg: '#FFFFFF' },
+        html: welcomeHtml(v) +
+          '<div class="card-body">' +
+          '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
+          '<div class="card-info">' +
+            '<div class="card-title">' + wifiSVG + ' WiFi</div>' +
+            '<div class="card-field"><div class="card-field-label">Network</div><div class="card-field-value">' + v.displaySsid + '</div></div>' +
+            (v.security !== 'nopass' ? '<div class="card-field"><div class="card-field-label">Password</div><div class="card-field-value password">' + v.displayPass + '</div></div>' : '') +
+            (v.hidden ? hiddenTag('card-hidden-tag') : '') +
+          '</div></div>' +
+          '<div class="card-footer">Scan QR code to connect</div>'
+      };
+    },
+    warm: function(v) {
+      return {
+        className: 'card-warm',
+        qr: { fg: '#5D4037', bg: '#FDF6EC' },
+        html: welcomeHtml(v) +
+          '<div class="card-title">' + wifiSVG + ' WiFi</div>' +
+          '<hr class="card-divider">' +
+          '<div class="card-field"><span class="card-field-label">Network: </span><span class="card-field-value">' + v.displaySsid + '</span></div>' +
+          (v.security !== 'nopass' ? '<div class="card-field"><span class="card-field-label">Password: </span><span class="card-field-value password">' + v.displayPass + '</span></div>' : '') +
+          (v.hidden ? hiddenTag('card-hidden-tag') : '') +
+          '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
+          '<div class="card-footer">Scan to connect</div>'
+      };
+    },
+    hotel: function(v) {
+      return {
+        className: 'card-hotel',
+        qr: { fg: '#D4AF37', bg: '#1A1A2E' },
+        html: welcomeHtml(v) +
+          '<div class="card-body">' +
+          '<div class="card-info">' +
+            '<div class="card-title">' + wifiSVG + ' WiFi</div>' +
+            '<hr class="card-title-underline">' +
+            '<div class="card-field"><div class="card-field-label">Network</div><div class="card-field-value">' + v.displaySsid + '</div></div>' +
+            (v.security !== 'nopass' ? '<div class="card-field"><div class="card-field-label">Password</div><div class="card-field-value password">' + v.displayPass + '</div></div>' : '') +
+            (v.hidden ? hiddenTag('card-hidden-tag') : '') +
+          '</div>' +
+          '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
+        '</div>' +
+        '<div class="card-footer">Scan QR code to connect to WiFi</div>'
+      };
+    },
+    airbnb: function(v) {
+      return {
+        className: 'card-airbnb',
+        qr: { fg: '#484848', bg: '#FFFFFF' },
+        html: '<div class="card-accent-bar"></div>' +
+          '<div class="card-content">' +
+            (v.displayWelcome ? '<div class="card-welcome">' + v.displayWelcome + '</div>' : '') +
+            '<div class="card-subtitle">Connect to our WiFi</div>' +
+            '<div class="card-body">' +
+              '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
+              '<div class="card-info">' +
+                '<div class="card-field"><div class="card-field-label">Network</div><div class="card-field-value">' + v.displaySsid + '</div></div>' +
+                (v.security !== 'nopass' ? '<div class="card-field"><div class="card-field-label">Password</div><div class="card-field-value password">' + v.displayPass + '</div></div>' : '') +
+                (v.hidden ? hiddenTag('card-hidden-tag') : '') +
+                '<div class="card-footer">Scan QR with your phone<br>to connect instantly</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>'
+      };
+    },
+    tech: function(v) {
+      return {
+        className: 'card-tech',
+        qr: { fg: '#58A6FF', bg: '#0D1117' },
+        html: welcomeHtml(v) +
+          '<div class="card-header">' +
+            '<span class="card-title">$ wifi-connect</span>' +
+            '<span class="card-title">' + wifiSVG + '</span>' +
+          '</div>' +
+          '<hr class="card-divider">' +
+          '<div class="card-field"><span class="card-field-label">SSID</span><span class="card-field-value">' + v.displaySsid + '</span></div>' +
+          (v.security !== 'nopass' ? '<div class="card-field"><span class="card-field-label">PASS</span><span class="card-field-value password">' + v.displayPass + '</span></div>' : '') +
+          (v.hidden ? hiddenTag('card-hidden-tag') : '') +
+          '<div class="card-qr-row">' +
+            '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
+            '<div class="card-footer">&gt; scan to connect</div>' +
+          '</div>'
+      };
+    },
+    kids: function(v) {
+      return {
+        className: 'card-kids',
+        qr: { fg: '#5D4037', bg: '#FFF8E1' },
+        html: welcomeHtml(v) +
+          '<div class="card-title">' + wifiSVG + ' WiFi for You!</div>' +
+          '<div class="card-field"><span class="card-field-label">Network: </span><span class="card-field-value">' + v.displaySsid + '</span></div>' +
+          (v.security !== 'nopass' ? '<div class="card-field"><span class="card-field-label">Password: </span><span class="card-field-value password">' + v.displayPass + '</span></div>' : '') +
+          (v.hidden ? hiddenTag('card-hidden-tag') : '') +
+          '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
+          '<div class="card-footer">Point your camera here!</div>'
+      };
+    }
+  };
+
+  // --- Render Card ---
+  function renderCard() {
+    var v = getValues();
+    var tpl = templates[currentTemplate](v);
+
+    // Remove old class, add new
+    wifiCardEl.className = 'wifi-card ' + tpl.className;
+    wifiCardEl.innerHTML = tpl.html;
+
+    // Render QR code into the canvas
+    var canvas = document.getElementById('qrCanvas');
+    if (canvas) {
+      var wifiStr = buildWifiString();
+      renderQR(canvas, wifiStr, 120, tpl.qr.fg, tpl.qr.bg);
+    }
+  }
+
+  // --- aria-live debounce (1000ms) ---
+  var ariaLiveTimer = null;
+  function announceCardUpdate() {
+    clearTimeout(ariaLiveTimer);
+    ariaLiveTimer = setTimeout(function() {
+      wifiCardEl.setAttribute('aria-live', 'polite');
+      // Force re-announcement by toggling content
+      var label = wifiCardEl.getAttribute('aria-label') || '';
+      wifiCardEl.setAttribute('aria-label', label + ' ');
+      setTimeout(function() {
+        wifiCardEl.setAttribute('aria-label', label);
+        wifiCardEl.setAttribute('aria-live', 'off');
+      }, 100);
+    }, 1000);
+  }
+
+  // --- Debounced Update ---
+  function scheduleUpdate() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function() {
+      renderCard();
+      announceCardUpdate();
+    }, 150);
+  }
+
+  // --- Event Listeners ---
+  function scheduleUpdateAndSave() {
+    scheduleUpdate();
+    saveSettings();
+  }
+
+  ssidInput.addEventListener('input', scheduleUpdateAndSave);
+  passwordInput.addEventListener('input', scheduleUpdateAndSave);
+  securitySelect.addEventListener('change', function() {
+    if (securitySelect.value === 'nopass') {
+      passwordField.classList.add('collapsed');
+    } else {
+      passwordField.classList.remove('collapsed');
+    }
+    scheduleUpdateAndSave();
+  });
+  hiddenCheckbox.addEventListener('change', scheduleUpdate);
+  showPassCheckbox.addEventListener('change', scheduleUpdate);
+
+  // Welcome message input
+  welcomeInput.addEventListener('input', function() {
+    welcomeCharCount.textContent = welcomeInput.value.length;
+    scheduleUpdateAndSave();
+  });
+
+  // Generate password button
+  generatePassBtn.addEventListener('click', function() {
+    var pwd = generateSecurePassword(16);
+    passwordInput.value = pwd;
+    // Show generated text as visual feedback
+    generatePassBtn.textContent = 'Generated!';
+    generatePassBtn.classList.add('generated');
+    setTimeout(function() {
+      generatePassBtn.innerHTML = '&#x1F511; Generate';
+      generatePassBtn.classList.remove('generated');
+    }, 1500);
+    // Make password visible so user can see the generated password
+    passwordInput.setAttribute('type', 'text');
+    document.getElementById('eyeIcon').innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    scheduleUpdateAndSave();
+  });
+
+  // Clear settings button
+  clearSettingsBtn.addEventListener('click', function() {
+    clearSettings();
+    ssidInput.value = 'MyWiFi';
+    passwordInput.value = 'password123';
+    welcomeInput.value = '';
+    welcomeCharCount.textContent = '0';
+    // Reset template to minimal
+    templateThumbs.forEach(function(t) {
+      t.classList.remove('active');
+      t.setAttribute('aria-checked', 'false');
+      t.setAttribute('tabindex', '-1');
+    });
+    var minimalThumb = document.querySelector('[data-template="minimal"]');
+    minimalThumb.classList.add('active');
+    minimalThumb.setAttribute('aria-checked', 'true');
+    minimalThumb.setAttribute('tabindex', '0');
+    currentTemplate = 'minimal';
+    renderCard();
+    announceCardUpdate();
+  });
+
+  // Password visibility toggle in form
+  togglePassBtn.addEventListener('click', function() {
+    var type = passwordInput.getAttribute('type');
+    if (type === 'text') {
+      passwordInput.setAttribute('type', 'password');
+      document.getElementById('eyeIcon').innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      passwordInput.setAttribute('type', 'text');
+      document.getElementById('eyeIcon').innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  });
+
+  // Template selector
+  templateThumbs.forEach(function(thumb) {
+    thumb.addEventListener('click', function() {
+      var tpl = this.getAttribute('data-template');
+      if (tpl === currentTemplate) return;
+
+      // Update active state + roving tabindex
+      templateThumbs.forEach(function(t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-checked', 'false');
+        t.setAttribute('tabindex', '-1');
+      });
+      this.classList.add('active');
+      this.setAttribute('aria-checked', 'true');
+      this.setAttribute('tabindex', '0');
+
+      // Crossfade animation
+      wifiCardEl.classList.add('fade-out');
+      setTimeout(function() {
+        currentTemplate = tpl;
+        renderCard();
+        announceCardUpdate();
+        saveSettings();
+        wifiCardEl.classList.remove('fade-out');
+      }, 150);
+    });
+
+    // Keyboard navigation for template selector
+    thumb.addEventListener('keydown', function(e) {
+      var thumbsArr = Array.from(templateThumbs);
+      var idx = thumbsArr.indexOf(this);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        var next = thumbsArr[(idx + 1) % thumbsArr.length];
+        next.focus();
+        next.click();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        var prev = thumbsArr[(idx - 1 + thumbsArr.length) % thumbsArr.length];
+        prev.focus();
+        prev.click();
+      }
+    });
+  });
+
+  // --- Print ---
+  btnPrint.addEventListener('click', function() {
+    window.print();
+  });
+
+  // --- Download PNG ---
+  // Renders the card entirely via Canvas 2D API for reliable PNG export
+  btnDownload.addEventListener('click', function() {
+    var v = getValues();
+    var W = 756; // 2x card width for high res
+    var H = 528; // 2x card height
+    var QR_SIZE = 240; // 2x QR
+    var canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    var ctx = canvas.getContext('2d');
+
+    // Template configs for canvas rendering
+    var tplConfigs = {
+      minimal: { bg: '#FFFFFF', text: '#111827', sub: '#6B7280', label: '#6B7280', border: '#E5E7EB', qrFg: '#111827', qrBg: '#FFFFFF', font: '-apple-system, sans-serif', radius: 16, footer: 'Scan QR code to connect' },
+      warm: { bg: '#FDF6EC', text: '#5D4037', sub: '#8D6E63', label: '#8D6E63', border: '#D7CCC8', qrFg: '#5D4037', qrBg: '#FDF6EC', font: 'Georgia, serif', radius: 8, footer: 'Scan to connect', centered: true },
+      hotel: { bg: '#1A1A2E', text: '#D4AF37', sub: '#C0C0C0', label: '#C0C0C0', border: '#D4AF37', qrFg: '#D4AF37', qrBg: '#1A1A2E', font: 'Georgia, serif', radius: 8, footer: 'SCAN QR CODE TO CONNECT TO WIFI' },
+      airbnb: { bg: '#FFFFFF', text: '#484848', sub: '#767676', label: '#767676', border: '#FF5A5F', qrFg: '#484848', qrBg: '#FFFFFF', font: '-apple-system, sans-serif', radius: 24, footer: 'Scan QR with your phone to connect instantly', accent: '#FF5A5F' },
+      tech: { bg: '#0D1117', text: '#C9D1D9', sub: '#8B949E', label: '#58A6FF', border: '#30363D', qrFg: '#58A6FF', qrBg: '#0D1117', font: 'ui-monospace, Consolas, monospace', radius: 12, footer: '> scan to connect', accent: '#39D353' },
+      kids: { bg: '#FFF8E1', text: '#5D4037', sub: '#8D6E63', label: '#5D4037', border: '#FF9800', qrFg: '#5D4037', qrBg: '#FFF8E1', font: '-apple-system, sans-serif', radius: 32, footer: 'Point your camera here!', accent: '#E91E63', footerColor: '#4CAF50' }
+    };
+
+    var cfg = tplConfigs[currentTemplate];
+    var ssid = v.ssid || 'Network Name';
+    var passText = (v.security !== 'nopass') ? (v.showPass && v.password ? v.password : 'Scan QR to connect') : '';
+    var welcomeText = v.welcome || '';
+
+    // Draw rounded rect
+    function roundRect(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.arcTo(x + w, y, x + w, y + r, r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x + r, y + h);
+      ctx.arcTo(x, y + h, x, y + h - r, r);
+      ctx.lineTo(x, y + r);
+      ctx.arcTo(x, y, x + r, y, r);
+      ctx.closePath();
+    }
+
+    // Background
+    roundRect(0, 0, W, H, cfg.radius);
+    ctx.fillStyle = cfg.bg;
+    ctx.fill();
+
+    // Border
+    if (currentTemplate !== 'airbnb') {
+      var bw = currentTemplate === 'kids' ? 6 : 2;
+      roundRect(bw / 2, bw / 2, W - bw, H - bw, cfg.radius);
+      ctx.strokeStyle = cfg.border;
+      ctx.lineWidth = bw;
+      ctx.stroke();
+    }
+
+    // Airbnb accent bar
+    if (currentTemplate === 'airbnb') {
+      roundRect(0, 0, W, H, cfg.radius);
+      ctx.save();
+      ctx.clip();
+      ctx.fillStyle = cfg.accent;
+      ctx.fillRect(0, 0, W, 12);
+      ctx.restore();
+      // Shadow effect with border
+      roundRect(0, 0, W, H, cfg.radius);
+      ctx.strokeStyle = '#E5E7EB';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Render QR to temp canvas
+    var qrCanvas = document.createElement('canvas');
+    var wifiStr = buildWifiString();
+    renderQR(qrCanvas, wifiStr, QR_SIZE, cfg.qrFg, cfg.qrBg);
+
+    // Layout depends on template
+    var PAD = 48;
+
+    // Welcome text offset for Canvas — shifts content down when present
+    var welcomeOffset = 0;
+    function drawWelcomeText(align, yPos, color, fontStr) {
+      if (!welcomeText) return yPos;
+      ctx.save();
+      ctx.textAlign = align;
+      ctx.textBaseline = 'top';
+      ctx.font = fontStr || ('500 22px ' + cfg.font);
+      ctx.fillStyle = color || cfg.sub;
+      var wx = align === 'center' ? W / 2 : PAD;
+      var truncWelcome = welcomeText.length > 50 ? welcomeText.substring(0, 50) + '...' : welcomeText;
+      ctx.fillText(truncWelcome, wx, yPos);
+      ctx.restore();
+      return yPos + 30;
+    }
+
+    if (currentTemplate === 'minimal' || currentTemplate === 'hotel') {
+      // QR left, text right (or vice versa for hotel: text left, QR right)
+      welcomeOffset = welcomeText ? 24 : 0;
+      var qrX = PAD;
+      var qrY = Math.round((H - QR_SIZE) / 2) - 20 + (welcomeOffset > 0 ? 8 : 0);
+      var textX = PAD + QR_SIZE + 40;
+
+      if (currentTemplate === 'hotel') {
+        textX = PAD;
+        qrX = W - PAD - QR_SIZE;
+      }
+
+      ctx.drawImage(qrCanvas, qrX, qrY, QR_SIZE, QR_SIZE);
+
+      // Welcome text above content
+      var contentStartY = PAD;
+      if (welcomeText) {
+        ctx.textBaseline = 'top';
+        drawWelcomeText('left', PAD - 4, currentTemplate === 'hotel' ? '#C0C0C0' : '#6B7280');
+        contentStartY = PAD + 26;
+      }
+
+      // Title
+      ctx.font = 'bold 36px ' + cfg.font;
+      ctx.fillStyle = cfg.text;
+      ctx.textBaseline = 'top';
+      ctx.fillText('WiFi', textX, contentStartY);
+
+      if (currentTemplate === 'hotel') {
+        ctx.fillStyle = cfg.border;
+        ctx.fillRect(textX, contentStartY + 44, 80, 4);
+      }
+
+      // Network label + value
+      var labelY = contentStartY + 60;
+      ctx.font = '22px ' + cfg.font;
+      ctx.fillStyle = cfg.label;
+      ctx.fillText('Network', textX, labelY);
+      ctx.font = 'bold 30px ' + cfg.font;
+      ctx.fillStyle = cfg.text;
+      var ssidTrunc = ssid.length > 18 ? ssid.substring(0, 18) + '...' : ssid;
+      ctx.fillText(ssidTrunc, textX, labelY + 28);
+
+      // Password
+      if (passText) {
+        var passY = labelY + 72;
+        ctx.font = '22px ' + cfg.font;
+        ctx.fillStyle = cfg.label;
+        ctx.fillText('Password', textX, passY);
+        ctx.font = '28px ' + cfg.font;
+        ctx.fillStyle = cfg.sub;
+        var passTrunc = passText.length > 18 ? passText.substring(0, 18) + '...' : passText;
+        ctx.fillText(passTrunc, textX, passY + 28);
+      }
+
+      // Hidden tag
+      if (v.hidden) {
+        ctx.font = 'italic 20px ' + cfg.font;
+        ctx.fillStyle = cfg.sub;
+        ctx.fillText('(Hidden network)', textX, (passText ? labelY + 132 : labelY + 72));
+      }
+
+      // Footer
+      ctx.fillStyle = currentTemplate === 'hotel' ? cfg.sub : cfg.label;
+      ctx.font = (currentTemplate === 'hotel' ? '18px ' : '22px ') + cfg.font;
+      ctx.textAlign = 'center';
+      if (currentTemplate === 'hotel') {
+        ctx.fillStyle = cfg.sub;
+        // Dashed line
+        ctx.strokeStyle = 'rgba(212,175,55,0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(PAD, H - 60);
+        ctx.lineTo(W - PAD, H - 60);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillText(cfg.footer, W / 2, H - 36);
+      } else {
+        // Solid line
+        ctx.strokeStyle = cfg.border;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(PAD, H - 56);
+        ctx.lineTo(W - PAD, H - 56);
+        ctx.stroke();
+        ctx.fillText(cfg.footer, W / 2, H - 38);
+      }
+      ctx.textAlign = 'left';
+    } else if (currentTemplate === 'warm' || currentTemplate === 'kids') {
+      // Centered layout: title, fields, QR, footer
+      ctx.textAlign = 'center';
+      var y = PAD;
+
+      // Welcome text
+      if (welcomeText) {
+        y = drawWelcomeText('center', y, currentTemplate === 'kids' ? '#E91E63' : '#8D6E63',
+          (currentTemplate === 'kids' ? 'bold' : 'italic') + ' 22px ' + cfg.font);
+      }
+
+      // Title
+      ctx.font = 'bold ' + (currentTemplate === 'kids' ? '44px ' : '40px ') + cfg.font;
+      ctx.fillStyle = currentTemplate === 'kids' ? cfg.accent : cfg.text;
+      ctx.textBaseline = 'top';
+      ctx.fillText(currentTemplate === 'kids' ? 'WiFi for You!' : 'WiFi', W / 2, y);
+      y += currentTemplate === 'kids' ? 52 : 48;
+
+      if (currentTemplate === 'warm') {
+        ctx.strokeStyle = cfg.border;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(W / 2 - 60, y);
+        ctx.lineTo(W / 2 + 60, y);
+        ctx.stroke();
+        y += 16;
+      }
+
+      // Fields
+      ctx.font = '24px ' + cfg.font;
+      ctx.fillStyle = cfg.label;
+      var ssidTrunc2 = ssid.length > 22 ? ssid.substring(0, 22) + '...' : ssid;
+      ctx.fillText('Network: ' + ssidTrunc2, W / 2, y);
+      y += 32;
+
+      if (passText) {
+        ctx.fillStyle = cfg.sub;
+        var passTrunc2 = passText.length > 22 ? passText.substring(0, 22) + '...' : passText;
+        ctx.fillText('Password: ' + passTrunc2, W / 2, y);
+        y += 32;
+      }
+
+      if (v.hidden) {
+        ctx.font = 'italic 20px ' + cfg.font;
+        ctx.fillStyle = cfg.sub;
+        ctx.fillText('(Hidden network)', W / 2, y);
+        y += 28;
+      }
+
+      // QR centered
+      y += 4;
+      var qrX2 = Math.round((W - QR_SIZE) / 2);
+      ctx.drawImage(qrCanvas, qrX2, y, QR_SIZE, QR_SIZE);
+      y += QR_SIZE + 12;
+
+      // Footer
+      ctx.font = (currentTemplate === 'kids' ? 'bold 24px ' : 'italic 22px ') + cfg.font;
+      ctx.fillStyle = currentTemplate === 'kids' ? (cfg.footerColor || cfg.sub) : cfg.sub;
+      ctx.fillText(cfg.footer, W / 2, y);
+      ctx.textAlign = 'left';
+    } else if (currentTemplate === 'airbnb') {
+      // Welcome + QR left + text right
+      ctx.textBaseline = 'top';
+      var ay = 32;
+
+      // Welcome
+      ctx.font = 'bold 40px ' + cfg.font;
+      ctx.fillStyle = '#6B6B6B';
+      if (welcomeText) {
+        var truncWelcome = welcomeText.length > 50 ? welcomeText.substring(0, 50) + '...' : welcomeText;
+        ctx.fillText(truncWelcome, PAD, ay);
+      }
+      ay += 46;
+      ctx.font = '26px ' + cfg.font;
+      ctx.fillStyle = cfg.sub;
+      ctx.fillText('Connect to our WiFi', PAD, ay);
+      ay += 48;
+
+      // QR left
+      ctx.drawImage(qrCanvas, PAD, ay, QR_SIZE, QR_SIZE);
+
+      // Text right of QR
+      var atx = PAD + QR_SIZE + 40;
+      ctx.font = '22px ' + cfg.font;
+      ctx.fillStyle = cfg.sub;
+      ctx.fillText('Network', atx, ay);
+      ctx.font = 'bold 28px ' + cfg.font;
+      ctx.fillStyle = cfg.text;
+      var ssidTrunc3 = ssid.length > 16 ? ssid.substring(0, 16) + '...' : ssid;
+      ctx.fillText(ssidTrunc3, atx, ay + 28);
+
+      if (passText) {
+        ctx.font = '22px ' + cfg.font;
+        ctx.fillStyle = cfg.sub;
+        ctx.fillText('Password', atx, ay + 68);
+        ctx.font = '28px ' + cfg.font;
+        ctx.fillStyle = cfg.sub;
+        var passTrunc3 = passText.length > 16 ? passText.substring(0, 16) + '...' : passText;
+        ctx.fillText(passTrunc3, atx, ay + 96);
+      }
+
+      if (v.hidden) {
+        ctx.font = 'italic 20px ' + cfg.font;
+        ctx.fillStyle = cfg.sub;
+        ctx.fillText('(Hidden network)', atx, passText ? ay + 134 : ay + 68);
+      }
+
+      // Footer text
+      ctx.font = '22px ' + cfg.font;
+      ctx.fillStyle = cfg.sub;
+      ctx.fillText('Scan QR with your phone', atx, ay + QR_SIZE - 48);
+      ctx.fillText('to connect instantly', atx, ay + QR_SIZE - 24);
+    } else if (currentTemplate === 'tech') {
+      ctx.textBaseline = 'top';
+      var ty = PAD;
+
+      // Welcome text
+      if (welcomeText) {
+        ctx.font = '500 20px ' + cfg.font;
+        ctx.fillStyle = '#8B949E';
+        var truncW = welcomeText.length > 50 ? welcomeText.substring(0, 50) + '...' : welcomeText;
+        ctx.fillText(truncW, PAD, ty);
+        ty += 28;
+      }
+
+      // Header
+      ctx.font = 'bold 28px ' + cfg.font;
+      ctx.fillStyle = cfg.accent;
+      ctx.fillText('$ wifi-connect', PAD, ty);
+      ty += 40;
+
+      // Divider
+      ctx.strokeStyle = cfg.border;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(PAD, ty);
+      ctx.lineTo(W - PAD, ty);
+      ctx.stroke();
+      ty += 24;
+
+      // Fields
+      ctx.font = '20px ' + cfg.font;
+      ctx.fillStyle = cfg.label;
+      ctx.fillText('SSID', PAD, ty);
+      ctx.font = '28px ' + cfg.font;
+      ctx.fillStyle = cfg.text;
+      var ssidTrunc4 = ssid.length > 20 ? ssid.substring(0, 20) + '...' : ssid;
+      ctx.fillText(ssidTrunc4, PAD + 120, ty);
+      ty += 38;
+
+      if (passText) {
+        ctx.font = '20px ' + cfg.font;
+        ctx.fillStyle = cfg.label;
+        ctx.fillText('PASS', PAD, ty);
+        ctx.font = '28px ' + cfg.font;
+        ctx.fillStyle = cfg.sub;
+        var passTrunc4 = passText.length > 20 ? passText.substring(0, 20) + '...' : passText;
+        ctx.fillText(passTrunc4, PAD + 120, ty);
+        ty += 38;
+      }
+
+      if (v.hidden) {
+        ctx.font = 'italic 20px ' + cfg.font;
+        ctx.fillStyle = cfg.sub;
+        ctx.fillText('(Hidden network)', PAD + 120, ty);
+        ty += 30;
+      }
+
+      // QR + footer
+      ty += 8;
+      ctx.drawImage(qrCanvas, PAD, ty, QR_SIZE, QR_SIZE);
+      ctx.font = '24px ' + cfg.font;
+      ctx.fillStyle = cfg.accent;
+      ctx.fillText(cfg.footer, PAD + QR_SIZE + 30, ty + QR_SIZE / 2 - 12);
+    }
+
+    // Trigger download
+    try {
+      if (!canvas.toBlob) { throw new Error('toBlob not supported'); }
+      canvas.toBlob(function(blob) {
+        try {
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          var safeSsid = (v.ssid || 'wifi').replace(/[^a-zA-Z0-9_-]/g, '_');
+          a.download = 'wifi-card-' + safeSsid + '.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          alert('Download failed: ' + err.message);
+        }
+      }, 'image/png');
+    } catch (e) {
+      // Fallback: toDataURL
+      try {
+        var dataUrl = canvas.toDataURL('image/png');
+        var a = document.createElement('a');
+        a.href = dataUrl;
+        var safeSsid = (v.ssid || 'wifi').replace(/[^a-zA-Z0-9_-]/g, '_');
+        a.download = 'wifi-card-' + safeSsid + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch (err2) {
+        alert('Could not download image. Try right-clicking the card to save it.');
+      }
+    }
+  });
+
+  // --- Download SVG ---
+  btnDownloadSVG.addEventListener('click', function() {
+    var v = getValues();
+    var W = 378;
+    var H = 264;
+    var QR_MODULE_SIZE = 2;
+    var QR_MARGIN = 8;
+
+    var tplConfigs = {
+      minimal: { bg: '#FFFFFF', text: '#111827', sub: '#6B7280', label: '#6B7280', border: '#E5E7EB', qrFg: '#111827', qrBg: '#FFFFFF', font: '-apple-system, BlinkMacSystemFont, sans-serif', footer: 'Scan QR code to connect' },
+      warm: { bg: '#FDF6EC', text: '#5D4037', sub: '#8D6E63', label: '#8D6E63', border: '#D7CCC8', qrFg: '#5D4037', qrBg: '#FDF6EC', font: 'Georgia, serif', footer: 'Scan to connect' },
+      hotel: { bg: '#1A1A2E', text: '#D4AF37', sub: '#C0C0C0', label: '#C0C0C0', border: '#D4AF37', qrFg: '#D4AF37', qrBg: '#1A1A2E', font: 'Georgia, serif', footer: 'SCAN QR CODE TO CONNECT TO WIFI' },
+      airbnb: { bg: '#FFFFFF', text: '#484848', sub: '#767676', label: '#767676', border: '#FF5A5F', qrFg: '#484848', qrBg: '#FFFFFF', font: '-apple-system, BlinkMacSystemFont, sans-serif', footer: 'Scan QR with your phone to connect instantly', accent: '#FF5A5F' },
+      tech: { bg: '#0D1117', text: '#C9D1D9', sub: '#8B949E', label: '#58A6FF', border: '#30363D', qrFg: '#58A6FF', qrBg: '#0D1117', font: 'ui-monospace, Consolas, monospace', footer: '> scan to connect', accent: '#39D353' },
+      kids: { bg: '#FFF8E1', text: '#5D4037', sub: '#8D6E63', label: '#5D4037', border: '#FF9800', qrFg: '#5D4037', qrBg: '#FFF8E1', font: '-apple-system, BlinkMacSystemFont, sans-serif', footer: 'Point your camera here!', accent: '#E91E63', footerColor: '#4CAF50' }
+    };
+
+    var cfg = tplConfigs[currentTemplate];
+    var ssid = v.ssid || 'Network Name';
+    var passText = (v.security !== 'nopass') ? (v.showPass && v.password ? v.password : 'Scan QR to connect') : '';
+    var welcomeText = v.welcome || '';
+
+    // Generate QR data
+    var wifiStr = buildWifiString();
+    var qr = qrcode(wifiStr, 'M');
+    var moduleCount = qr.getModuleCount();
+    var qrSize = moduleCount * QR_MODULE_SIZE + QR_MARGIN * 2;
+
+    function svgEsc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+    }
+
+    function buildQrSvgRects(ox, oy) {
+      var s = '';
+      for (var r = 0; r < moduleCount; r++) {
+        for (var c = 0; c < moduleCount; c++) {
+          if (qr.isDark(r, c)) {
+            s += '<rect x="' + (ox + QR_MARGIN + c * QR_MODULE_SIZE) + '" y="' + (oy + QR_MARGIN + r * QR_MODULE_SIZE) + '" width="' + QR_MODULE_SIZE + '" height="' + QR_MODULE_SIZE + '" fill="' + cfg.qrFg + '"/>';
+          }
+        }
+      }
+      return '<rect x="' + ox + '" y="' + oy + '" width="' + qrSize + '" height="' + qrSize + '" fill="' + cfg.qrBg + '"/>' + s;
+    }
+
+    var svg = '';
+    var PAD = 24;
+    var ssidTrunc = ssid.length > 18 ? ssid.substring(0, 18) + '...' : ssid;
+    var passTrunc = passText.length > 18 ? passText.substring(0, 18) + '...' : passText;
+    var welcomeTrunc = welcomeText.length > 50 ? welcomeText.substring(0, 50) + '...' : welcomeText;
+
+    // Common SVG wrapper
+    svg += '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">';
+    svg += '<defs><style><![CDATA[ text { font-family: ' + svgEsc(cfg.font) + '; } ]]></style></defs>';
+
+    // Background
+    var borderW = currentTemplate === 'kids' ? 3 : 1;
+    var radius = currentTemplate === 'minimal' ? 8 : currentTemplate === 'airbnb' ? 12 : currentTemplate === 'kids' ? 16 : currentTemplate === 'tech' ? 6 : 4;
+    svg += '<rect x="' + (borderW/2) + '" y="' + (borderW/2) + '" width="' + (W - borderW) + '" height="' + (H - borderW) + '" rx="' + radius + '" fill="' + cfg.bg + '"';
+    if (currentTemplate !== 'airbnb') {
+      svg += ' stroke="' + cfg.border + '" stroke-width="' + borderW + '"';
+    }
+    svg += '/>';
+
+    // Airbnb accent bar
+    if (currentTemplate === 'airbnb') {
+      svg += '<rect x="0" y="0" width="' + W + '" height="6" rx="' + radius + '" fill="' + cfg.accent + '"/>';
+      svg += '<rect x="0" y="3" width="' + W + '" height="3" fill="' + cfg.accent + '"/>';
+    }
+
+    if (currentTemplate === 'minimal' || currentTemplate === 'hotel') {
+      var qrX = currentTemplate === 'hotel' ? W - PAD - qrSize : PAD;
+      var textX = currentTemplate === 'hotel' ? PAD : PAD + qrSize + 20;
+      var y = PAD;
+
+      if (welcomeTrunc) {
+        svg += '<text x="' + textX + '" y="' + y + '" fill="' + (currentTemplate === 'hotel' ? '#C0C0C0' : '#6B7280') + '" font-size="11" dominant-baseline="hanging">' + svgEsc(welcomeTrunc) + '</text>';
+        y += 18;
+      }
+
+      svg += '<text x="' + textX + '" y="' + y + '" fill="' + cfg.text + '" font-size="18" font-weight="700" dominant-baseline="hanging">WiFi</text>';
+      if (currentTemplate === 'hotel') {
+        svg += '<rect x="' + textX + '" y="' + (y + 24) + '" width="40" height="2" fill="' + cfg.border + '"/>';
+      }
+      y += 32;
+
+      svg += '<text x="' + textX + '" y="' + y + '" fill="' + cfg.label + '" font-size="11" dominant-baseline="hanging">Network</text>';
+      svg += '<text x="' + textX + '" y="' + (y + 14) + '" fill="' + cfg.text + '" font-size="15" font-weight="600" dominant-baseline="hanging">' + svgEsc(ssidTrunc) + '</text>';
+      y += 34;
+
+      if (passText) {
+        svg += '<text x="' + textX + '" y="' + y + '" fill="' + cfg.label + '" font-size="11" dominant-baseline="hanging">Password</text>';
+        svg += '<text x="' + textX + '" y="' + (y + 14) + '" fill="' + cfg.sub + '" font-size="13" dominant-baseline="hanging">' + svgEsc(passTrunc) + '</text>';
+        y += 34;
+      }
+
+      if (v.hidden) {
+        svg += '<text x="' + textX + '" y="' + y + '" fill="' + cfg.sub + '" font-size="10" font-style="italic" dominant-baseline="hanging">(Hidden network)</text>';
+      }
+
+      var qrY = Math.round((H - qrSize) / 2) - 10;
+      svg += buildQrSvgRects(qrX, qrY);
+
+      svg += '<line x1="' + PAD + '" y1="' + (H - 28) + '" x2="' + (W - PAD) + '" y2="' + (H - 28) + '" stroke="' + (currentTemplate === 'hotel' ? 'rgba(212,175,55,0.3)' : cfg.border) + '" stroke-width="1"' + (currentTemplate === 'hotel' ? ' stroke-dasharray="6 4"' : '') + '/>';
+      svg += '<text x="' + (W / 2) + '" y="' + (H - 10) + '" fill="' + (currentTemplate === 'hotel' ? cfg.sub : cfg.label) + '" font-size="10" text-anchor="middle">' + svgEsc(cfg.footer) + '</text>';
+
+    } else if (currentTemplate === 'warm' || currentTemplate === 'kids') {
+      var y = PAD;
+      if (welcomeTrunc) {
+        svg += '<text x="' + (W / 2) + '" y="' + y + '" fill="' + (currentTemplate === 'kids' ? '#E91E63' : '#8D6E63') + '" font-size="12" text-anchor="middle" dominant-baseline="hanging"' + (currentTemplate === 'kids' ? ' font-weight="700"' : ' font-style="italic"') + '>' + svgEsc(welcomeTrunc) + '</text>';
+        y += 18;
+      }
+      svg += '<text x="' + (W / 2) + '" y="' + y + '" fill="' + (currentTemplate === 'kids' ? (cfg.accent || cfg.text) : cfg.text) + '" font-size="' + (currentTemplate === 'kids' ? '22' : '20') + '" font-weight="700" text-anchor="middle" dominant-baseline="hanging">' + (currentTemplate === 'kids' ? 'WiFi for You!' : 'WiFi') + '</text>';
+      y += currentTemplate === 'kids' ? 28 : 26;
+
+      if (currentTemplate === 'warm') {
+        svg += '<line x1="' + (W / 2 - 30) + '" y1="' + y + '" x2="' + (W / 2 + 30) + '" y2="' + y + '" stroke="' + cfg.border + '" stroke-width="1"/>';
+        y += 10;
+      }
+
+      var ssidTrunc2 = ssid.length > 22 ? ssid.substring(0, 22) + '...' : ssid;
+      svg += '<text x="' + (W / 2) + '" y="' + y + '" fill="' + cfg.label + '" font-size="12" text-anchor="middle" dominant-baseline="hanging">Network: ' + svgEsc(ssidTrunc2) + '</text>';
+      y += 18;
+
+      if (passText) {
+        var passTrunc2 = passText.length > 22 ? passText.substring(0, 22) + '...' : passText;
+        svg += '<text x="' + (W / 2) + '" y="' + y + '" fill="' + cfg.sub + '" font-size="12" text-anchor="middle" dominant-baseline="hanging">Password: ' + svgEsc(passTrunc2) + '</text>';
+        y += 18;
+      }
+
+      if (v.hidden) {
+        svg += '<text x="' + (W / 2) + '" y="' + y + '" fill="' + cfg.sub + '" font-size="10" font-style="italic" text-anchor="middle" dominant-baseline="hanging">(Hidden network)</text>';
+        y += 16;
+      }
+
+      y += 4;
+      var qrX2 = Math.round((W - qrSize) / 2);
+      svg += buildQrSvgRects(qrX2, y);
+      y += qrSize + 8;
+
+      svg += '<text x="' + (W / 2) + '" y="' + y + '" fill="' + (currentTemplate === 'kids' ? (cfg.footerColor || cfg.sub) : cfg.sub) + '" font-size="12" text-anchor="middle" dominant-baseline="hanging"' + (currentTemplate === 'kids' ? ' font-weight="600"' : ' font-style="italic"') + '>' + svgEsc(cfg.footer) + '</text>';
+
+    } else if (currentTemplate === 'airbnb') {
+      var y = 18;
+      if (welcomeTrunc) {
+        svg += '<text x="' + PAD + '" y="' + y + '" fill="#6B6B6B" font-size="20" font-weight="700" dominant-baseline="hanging">' + svgEsc(welcomeTrunc) + '</text>';
+      }
+      y += 26;
+      svg += '<text x="' + PAD + '" y="' + y + '" fill="' + cfg.sub + '" font-size="13" dominant-baseline="hanging">Connect to our WiFi</text>';
+      y += 26;
+
+      svg += buildQrSvgRects(PAD, y);
+
+      var atx = PAD + qrSize + 20;
+      svg += '<text x="' + atx + '" y="' + y + '" fill="' + cfg.sub + '" font-size="11" dominant-baseline="hanging">Network</text>';
+      svg += '<text x="' + atx + '" y="' + (y + 14) + '" fill="' + cfg.text + '" font-size="14" font-weight="600" dominant-baseline="hanging">' + svgEsc(ssidTrunc) + '</text>';
+
+      if (passText) {
+        svg += '<text x="' + atx + '" y="' + (y + 36) + '" fill="' + cfg.sub + '" font-size="11" dominant-baseline="hanging">Password</text>';
+        svg += '<text x="' + atx + '" y="' + (y + 50) + '" fill="' + cfg.sub + '" font-size="13" dominant-baseline="hanging">' + svgEsc(passTrunc) + '</text>';
+      }
+
+      svg += '<text x="' + atx + '" y="' + (y + qrSize - 24) + '" fill="' + cfg.sub + '" font-size="11" dominant-baseline="hanging">Scan QR with your phone</text>';
+      svg += '<text x="' + atx + '" y="' + (y + qrSize - 10) + '" fill="' + cfg.sub + '" font-size="11" dominant-baseline="hanging">to connect instantly</text>';
+
+    } else if (currentTemplate === 'tech') {
+      var y = PAD;
+      if (welcomeTrunc) {
+        svg += '<text x="' + PAD + '" y="' + y + '" fill="#8B949E" font-size="10" dominant-baseline="hanging">' + svgEsc(welcomeTrunc) + '</text>';
+        y += 16;
+      }
+      svg += '<text x="' + PAD + '" y="' + y + '" fill="' + cfg.accent + '" font-size="14" font-weight="700" dominant-baseline="hanging">$ wifi-connect</text>';
+      y += 22;
+      svg += '<line x1="' + PAD + '" y1="' + y + '" x2="' + (W - PAD) + '" y2="' + y + '" stroke="' + cfg.border + '" stroke-width="1"/>';
+      y += 14;
+
+      var ssidTrunc4 = ssid.length > 20 ? ssid.substring(0, 20) + '...' : ssid;
+      svg += '<text x="' + PAD + '" y="' + y + '" fill="' + cfg.label + '" font-size="10" dominant-baseline="hanging">SSID</text>';
+      svg += '<text x="' + (PAD + 60) + '" y="' + y + '" fill="' + cfg.text + '" font-size="14" dominant-baseline="hanging">' + svgEsc(ssidTrunc4) + '</text>';
+      y += 20;
+
+      if (passText) {
+        var passTrunc4 = passText.length > 20 ? passText.substring(0, 20) + '...' : passText;
+        svg += '<text x="' + PAD + '" y="' + y + '" fill="' + cfg.label + '" font-size="10" dominant-baseline="hanging">PASS</text>';
+        svg += '<text x="' + (PAD + 60) + '" y="' + y + '" fill="' + cfg.sub + '" font-size="14" dominant-baseline="hanging">' + svgEsc(passTrunc4) + '</text>';
+        y += 20;
+      }
+
+      if (v.hidden) {
+        svg += '<text x="' + (PAD + 60) + '" y="' + y + '" fill="' + cfg.sub + '" font-size="10" font-style="italic" dominant-baseline="hanging">(Hidden network)</text>';
+        y += 16;
+      }
+
+      y += 6;
+      svg += buildQrSvgRects(PAD, y);
+      svg += '<text x="' + (PAD + qrSize + 16) + '" y="' + (y + qrSize / 2 - 6) + '" fill="' + cfg.accent + '" font-size="12" dominant-baseline="middle">' + svgEsc(cfg.footer) + '</text>';
+    }
+
+    svg += '</svg>';
+
+    // Download
+    try {
+      var blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      var safeSsid = (v.ssid || 'wifi').replace(/[^a-zA-Z0-9_-]/g, '_');
+      a.download = 'wifi-card-' + safeSsid + '.svg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('SVG download failed: ' + err.message);
+    }
+  });
+
+  // --- Copy WiFi Settings ---
+  btnCopyWifi.addEventListener('click', function() {
+    var v = getValues();
+    var text = 'Network: ' + (v.ssid || '');
+    if (v.security !== 'nopass' && v.password && v.showPass) {
+      text += '\nPassword: ' + v.password;
+    }
+    function showCopied() {
+      var orig = btnCopyWifi.innerHTML;
+      btnCopyWifi.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      setTimeout(function() { btnCopyWifi.innerHTML = orig; }, 1500);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showCopied).catch(function() {
+        // Fallback
+        if (fallbackCopy(text)) showCopied();
+      });
+    } else {
+      if (fallbackCopy(text)) showCopied();
+    }
+  });
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  // --- Share (Web Share API) ---
+  if (navigator.share) {
+    btnShare.style.display = '';
+    btnShare.addEventListener('click', function() {
+      var v = getValues();
+      var text = 'WiFi: ' + (v.ssid || 'Network');
+      var hasPassword = v.showPass && v.password && v.security !== 'nopass';
+      if (hasPassword) {
+        text += ' / Password: ' + v.password;
+      }
+      if (hasPassword && !confirm('The shared data will include your WiFi password in plain text. Continue?')) {
+        return;
+      }
+      navigator.share({
+        title: 'WiFi Card',
+        text: text
+      }).catch(function() { /* user cancelled */ });
+    });
+  }
+
+  // --- Restore Settings from localStorage ---
+  (function restoreSettings() {
+    var saved = loadSettings();
+    if (!saved) return;
+    if (saved.network !== undefined && saved.network !== null) ssidInput.value = saved.network;
+    if (saved.password !== undefined && saved.password !== null) passwordInput.value = saved.password;
+    if (saved.welcome !== undefined && saved.welcome !== null) {
+      welcomeInput.value = saved.welcome;
+      welcomeCharCount.textContent = saved.welcome.length;
+    }
+    if (saved.template && templates[saved.template]) {
+      currentTemplate = saved.template;
+      templateThumbs.forEach(function(t) {
+        var tpl = t.getAttribute('data-template');
+        if (tpl === saved.template) {
+          t.classList.add('active');
+          t.setAttribute('aria-checked', 'true');
+          t.setAttribute('tabindex', '0');
+        } else {
+          t.classList.remove('active');
+          t.setAttribute('aria-checked', 'false');
+          t.setAttribute('tabindex', '-1');
+        }
+      });
+    }
+  })();
+
+  // --- Initial Render ---
+  renderCard();
+
+  // --- Onboarding ---
+  (function initOnboarding() {
+    var KEY = 'wificard_onboarding_done';
+    try { if (localStorage.getItem(KEY)) return; } catch(e) { return; }
+    var overlay = document.getElementById('wificard-onboarding');
+    overlay.style.display = '';
+    document.getElementById('wificard-onb-start').addEventListener('click', function() {
+      overlay.classList.add('hiding');
+      setTimeout(function() {
+        overlay.style.display = 'none';
+        overlay.remove();
+      }, 300);
+      try { localStorage.setItem(KEY, '1'); } catch(e) {}
+    });
+  })();
+
+})();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(function(){});
+}
+</script>
+</body>
+</html>

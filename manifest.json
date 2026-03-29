@@ -1,0 +1,24 @@
+{
+  "name": "WifiCard",
+  "short_name": "WifiCard",
+  "description": "Beautiful printable WiFi cards with QR codes",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FBF8F4",
+  "theme_color": "#D4A574",
+  "scope": ".",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📶</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📶</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
