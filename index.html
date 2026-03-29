@@ -2855,6 +2855,16 @@ body {
         </div>
       </div>
 
+      <!-- v16: Card border style -->
+      <div class="field" style="margin-top:12px">
+        <label for="cardBorderStyle" style="font-size:14px;font-weight:500;color:var(--color-text);display:block;margin-bottom:6px">Card Border Style</label>
+        <select id="cardBorderStyle" style="width:100%;height:44px;padding:0 12px;border:1.5px solid var(--color-border);border-radius:10px;font-size:15px;font-family:var(--font-ui);color:var(--color-text);background:var(--color-surface);cursor:pointer;">
+          <option value="solid" selected>Solid</option>
+          <option value="dashed">Dashed</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+
       <!-- v8: Batch Mode -->
       <div class="batch-section">
         <div class="batch-count" id="batchCount" style="display:none"></div>
@@ -3397,6 +3407,15 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       wifiCardEl.classList.add('template-fade-in');
     }
     wifiCardEl.innerHTML = tpl.html;
+
+    // v16: Card border style
+    var borderStyleSel = document.getElementById('cardBorderStyle');
+    var borderVal = borderStyleSel ? borderStyleSel.value : 'solid';
+    if (borderVal === 'none') {
+      wifiCardEl.style.borderStyle = 'none';
+    } else {
+      wifiCardEl.style.borderStyle = borderVal;
+    }
 
     // Render QR code into the canvas (v14: use selected QR size)
     var canvas = document.getElementById('qrCanvas');
@@ -4745,6 +4764,12 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       setTimeout(function() { card.classList.remove('parallax-reset'); }, 400);
     });
   })();
+
+  // --- v16: Card Border Style change listener ---
+  document.getElementById('cardBorderStyle').addEventListener('change', function() {
+    renderCard(false);
+    announceCardUpdate();
+  });
 
   // --- v9: Share on X ---
   document.getElementById('btnShareX').addEventListener('click', function() {
