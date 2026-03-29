@@ -1,5 +1,14 @@
 # WifiCard — Changelog
 
+## v14.0 (2026-03-29) — Card Count Label in Print
+
+### Added
+- **Card count label in print** -- when printing in batch mode, each card shows "Card 1 of N", "Card 2 of N" etc. in the print output; hidden in single card mode (no batch networks)
+- Version bumped to v14.0
+- SW cache bumped to `wificard-v14.0`
+
+---
+
 ## v13.0 (2026-03-29) — Print-Out Animation
 
 ### Added

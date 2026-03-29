@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WifiCard v13.0 -->
+<!-- WifiCard v14.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1901,6 +1901,15 @@ body {
     margin: 24px auto;
     page-break-inside: avoid;
     break-inside: avoid;
+  }
+  /* v14: Card count label in batch print */
+  .print-card-label {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+    font-family: var(--font-ui), sans-serif;
+    padding: 4px 0 2px;
+    letter-spacing: 0.02em;
   }
 }
 
@@ -4564,6 +4573,11 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       var cardClone = wifiCardEl.cloneNode(true);
       cardClone.id = '';
       cardClone.style.margin = '24px auto';
+      // v14: Card count label in print for batch mode
+      var cardLabel = document.createElement('div');
+      cardLabel.className = 'print-card-label';
+      cardLabel.textContent = 'Card ' + (allNets.indexOf(net) + 1) + ' of ' + allNets.length;
+      cardClone.insertBefore(cardLabel, cardClone.firstChild);
       printContainer.appendChild(cardClone);
     });
 
