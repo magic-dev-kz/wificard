@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WifiCard v5.0 -->
+<!-- WifiCard v6.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1568,6 +1568,18 @@ body {
     gap: 10px;
     padding: 0 4px;
   }
+
+  .template-scroll-wrapper.show-scroll-hint::after {
+    opacity: 1;
+  }
+
+  .card-size-option {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 13px;
+  }
 }
 
 /* Scale card down on small screens */
@@ -1608,7 +1620,8 @@ body {
   .security-badge,
   .form-panel,
   .actions,
-  .clear-settings-btn {
+  .clear-settings-btn,
+  .card-size-field {
     display: none !important;
   }
 
@@ -1858,6 +1871,214 @@ body {
   border-color: var(--color-accent);
 }
 
+.accent-reset-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   Missing focus-visible (v6.0)
+   ============================================ */
+.dark-mode-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.toggle-pass-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.clear-settings-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.header-logo:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.wificard-onb-cta:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.form-group input:focus-visible,
+.form-group select:focus-visible,
+.welcome-field input:focus-visible,
+.note-field input:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-accent-light);
+}
+
+/* ============================================
+   Template Scroll Indicator (v6.0)
+   ============================================ */
+.template-scroll-wrapper {
+  position: relative;
+}
+
+.template-scroll-wrapper::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 48px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--color-bg));
+  border-radius: 0 0 8px 0;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.template-scroll-wrapper.show-scroll-hint::after {
+  opacity: 1;
+}
+
+.template-scroll-hint {
+  display: none;
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary);
+  font-size: 18px;
+  pointer-events: none;
+  z-index: 2;
+  animation: scrollHintBounce 1.5s ease-in-out infinite;
+}
+
+.template-scroll-wrapper.show-scroll-hint .template-scroll-hint {
+  display: block;
+}
+
+@keyframes scrollHintBounce {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(4px); }
+}
+
+/* ============================================
+   QR Crossfade (v6.0)
+   ============================================ */
+.wifi-card.qr-updating {
+  opacity: 0.4;
+  transform: scale(0.99);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.wifi-card.qr-updated {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* ============================================
+   Card Size Selector (v6.0)
+   ============================================ */
+.card-size-field {
+  margin-bottom: 20px;
+}
+
+.card-size-field > label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.card-size-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card-size-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.card-size-option:hover {
+  border-color: var(--color-accent);
+}
+
+.card-size-option input[type="radio"] {
+  accent-color: var(--color-accent);
+  margin: 0;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.card-size-option input[type="radio"]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.card-size-option.active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+  box-shadow: 0 0 0 3px var(--color-accent-light);
+}
+
+.card-size-option .size-label {
+  font-weight: 600;
+}
+
+.card-size-option .size-dims {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.card-size-custom-inputs {
+  display: none;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.card-size-custom-inputs.visible {
+  display: flex;
+}
+
+.card-size-custom-inputs input {
+  width: 80px;
+  height: 40px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card-size-custom-inputs input:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-accent-light);
+}
+
+.card-size-custom-inputs span {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
 /* ============================================
    Additional Note Field (v5.0)
    ============================================ */
@@ -2041,6 +2262,33 @@ body {
         </div>
       </div>
 
+      <!-- Card Size -->
+      <div class="card-size-field">
+        <label>Card size</label>
+        <div class="card-size-options" role="radiogroup" aria-label="Card size">
+          <label class="card-size-option active">
+            <input type="radio" name="cardSize" value="a6" checked aria-label="A6 Card size">
+            <span class="size-label">A6 Card</span>
+            <span class="size-dims">148x105mm</span>
+          </label>
+          <label class="card-size-option">
+            <input type="radio" name="cardSize" value="business" aria-label="Business Card size">
+            <span class="size-label">Business</span>
+            <span class="size-dims">85x55mm</span>
+          </label>
+          <label class="card-size-option">
+            <input type="radio" name="cardSize" value="custom" aria-label="Custom card size">
+            <span class="size-label">Custom</span>
+          </label>
+        </div>
+        <div class="card-size-custom-inputs" id="cardSizeCustom">
+          <input type="number" id="cardCustomW" min="40" max="400" value="148" placeholder="W" aria-label="Custom width in mm">
+          <span>x</span>
+          <input type="number" id="cardCustomH" min="30" max="300" value="105" placeholder="H" aria-label="Custom height in mm">
+          <span>mm</span>
+        </div>
+      </div>
+
       <hr class="form-divider">
 
       <!-- Toggles -->
@@ -2103,7 +2351,8 @@ body {
 
 <!-- Template Selector -->
 <nav class="template-section" aria-label="Card templates">
-  <div class="template-scroll" role="radiogroup" aria-label="Card template">
+  <div class="template-scroll-wrapper" id="templateScrollWrapper">
+  <div class="template-scroll" id="templateScroll" role="radiogroup" aria-label="Card template">
     <div class="template-item">
       <button class="template-thumb active" role="radio" aria-checked="true" aria-label="Minimal template" data-template="minimal" tabindex="0">
         <div class="template-thumb-inner" style="background:#fff;border:1px solid #E5E7EB;color:#111827;">Minimal</div>
@@ -2140,6 +2389,8 @@ body {
       </button>
       <span class="template-label">Kids</span>
     </div>
+  </div>
+  <span class="template-scroll-hint" aria-hidden="true">&#x2192;</span>
   </div>
 </nav>
 
@@ -2194,6 +2445,13 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
   var accentResetBtn = document.getElementById('accentResetBtn');
   var noteInput = document.getElementById('noteMsg');
   var noteCharCount = document.getElementById('noteCharCount');
+  var templateScrollWrapper = document.getElementById('templateScrollWrapper');
+  var templateScrollEl = document.getElementById('templateScroll');
+  var cardSizeRadios = document.querySelectorAll('input[name="cardSize"]');
+  var cardSizeOptions = document.querySelectorAll('.card-size-option');
+  var cardSizeCustom = document.getElementById('cardSizeCustom');
+  var cardCustomW = document.getElementById('cardCustomW');
+  var cardCustomH = document.getElementById('cardCustomH');
 
   // --- State ---
   var currentTemplate = 'minimal';
@@ -2581,12 +2839,19 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     }, 1000);
   }
 
-  // --- Debounced Update ---
+  // --- Debounced Update with QR Crossfade (v6) ---
   function scheduleUpdate() {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(function() {
-      renderCard();
-      announceCardUpdate();
+      // Crossfade: fade out, update, fade in
+      wifiCardEl.classList.remove('qr-updated');
+      wifiCardEl.classList.add('qr-updating');
+      setTimeout(function() {
+        renderCard();
+        wifiCardEl.classList.remove('qr-updating');
+        wifiCardEl.classList.add('qr-updated');
+        announceCardUpdate();
+      }, 150);
     }, 150);
   }
 
@@ -3477,6 +3742,70 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     }
     updateAccentColorUI();
   })();
+
+  // --- Template Scroll Indicator (v6) ---
+  function checkScrollHint() {
+    if (!templateScrollEl || !templateScrollWrapper) return;
+    var scrollable = templateScrollEl.scrollWidth > templateScrollEl.clientWidth;
+    var atEnd = templateScrollEl.scrollLeft + templateScrollEl.clientWidth >= templateScrollEl.scrollWidth - 8;
+    if (scrollable && !atEnd) {
+      templateScrollWrapper.classList.add('show-scroll-hint');
+    } else {
+      templateScrollWrapper.classList.remove('show-scroll-hint');
+    }
+  }
+  if (templateScrollEl) {
+    templateScrollEl.addEventListener('scroll', checkScrollHint, { passive: true });
+    window.addEventListener('resize', checkScrollHint);
+    // Initial check after DOM settles
+    setTimeout(checkScrollHint, 200);
+  }
+
+  // --- Card Size Selector (v6) ---
+  var cardSizes = {
+    a6: { w: 378, h: 264 },       // 148x105mm at ~2.55px/mm
+    business: { w: 217, h: 140 },  // 85x55mm at ~2.55px/mm
+  };
+
+  function applyCardSize(w, h) {
+    document.documentElement.style.setProperty('--card-width', w + 'px');
+    document.documentElement.style.setProperty('--card-height', h + 'px');
+    // Also update QR size proportionally
+    var qrSize = Math.round(Math.min(w, h) * 0.45);
+    document.documentElement.style.setProperty('--qr-size', qrSize + 'px');
+    renderCard();
+  }
+
+  cardSizeRadios.forEach(function(radio) {
+    radio.addEventListener('change', function() {
+      // Update active styling
+      cardSizeOptions.forEach(function(opt) { opt.classList.remove('active'); });
+      this.closest('.card-size-option').classList.add('active');
+
+      var val = this.value;
+      if (val === 'custom') {
+        cardSizeCustom.classList.add('visible');
+        applyCardSize(parseInt(cardCustomW.value) || 378, parseInt(cardCustomH.value) || 264);
+      } else {
+        cardSizeCustom.classList.remove('visible');
+        var size = cardSizes[val];
+        applyCardSize(size.w, size.h);
+      }
+    });
+  });
+
+  cardCustomW.addEventListener('input', function() {
+    var w = Math.max(40, Math.min(400, parseInt(this.value) || 148));
+    var h = Math.max(30, Math.min(300, parseInt(cardCustomH.value) || 105));
+    // Convert mm to px (~2.55px/mm)
+    applyCardSize(Math.round(w * 2.55), Math.round(h * 2.55));
+  });
+
+  cardCustomH.addEventListener('input', function() {
+    var w = Math.max(40, Math.min(400, parseInt(cardCustomW.value) || 148));
+    var h = Math.max(30, Math.min(300, parseInt(this.value) || 105));
+    applyCardSize(Math.round(w * 2.55), Math.round(h * 2.55));
+  });
 
   // --- Initial Render ---
   renderCard();
