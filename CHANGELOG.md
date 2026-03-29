@@ -1,5 +1,20 @@
 # WifiCard — Changelog
 
+## v11.0 (2026-03-29) — Micro-improvements
+
+### Added
+- **Onboarding 3-steps visual** — numbered step circles (1 Enter WiFi, 2 Pick a style, 3 Print or share) with arrow connectors shown above the feature list in the onboarding overlay
+- **Card breathing shadow** — idle card preview pulses with a subtle indigo glow via `cardBreathe` keyframes (3s cycle), giving the card a living feel
+
+### Changed
+- Version bumped to v11.0
+- SW cache bumped to `wificard-v11.0`
+
+### Preserved
+- All v10.x features intact (print toast, card count badge, welcome placeholder)
+
+---
+
 ## v10.0 (2026-03-29)
 ### Added
 - **Welcome message placeholder** — placeholder text changed to "e.g. Welcome! Enjoy your stay" for a more helpful hint
