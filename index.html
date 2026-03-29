@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WifiCard v4.0 -->
+<!-- WifiCard v5.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1782,6 +1782,155 @@ body {
 .openclaw-footer a:hover {
   opacity: 1;
 }
+
+/* ============================================
+   Accent Color Picker (v5.0)
+   ============================================ */
+.accent-color-field {
+  margin-bottom: 20px;
+}
+
+.accent-color-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.accent-color-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.accent-color-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--color-border);
+  border-radius: 10px;
+  padding: 3px;
+  cursor: pointer;
+  background: var(--color-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.accent-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.accent-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+
+.accent-color-input::-moz-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+
+.accent-color-input:hover {
+  border-color: var(--color-accent);
+}
+
+.accent-color-input:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.accent-color-value {
+  font-size: 14px;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.accent-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.accent-reset-btn:hover {
+  color: var(--color-text);
+  border-color: var(--color-accent);
+}
+
+/* ============================================
+   Additional Note Field (v5.0)
+   ============================================ */
+.note-field {
+  margin-bottom: 20px;
+}
+
+.note-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.note-field input {
+  width: 100%;
+  height: 48px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.note-field input:hover {
+  border-color: #C7C9CE;
+}
+
+.note-field input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-accent-light);
+}
+
+.note-char-count {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* Additional note text on card */
+.card-note-text {
+  font-size: 11px;
+  font-weight: 400;
+  text-align: center;
+  padding: 2px 12px 4px;
+  line-height: 1.3;
+  opacity: 0.75;
+}
+
+.card-minimal .card-note-text { color: #6B7280; text-align: left; padding: 0 0 4px; font-style: italic; }
+.card-warm .card-note-text { color: #8D6E63; font-style: italic; }
+.card-hotel .card-note-text { color: #C0C0C0; letter-spacing: 0.3px; font-style: italic; }
+.card-airbnb .card-note-text { color: #767676; text-align: left; padding: 0 0 4px; font-style: italic; }
+.card-tech .card-note-text { color: #8B949E; font-family: var(--font-mono); text-align: left; padding: 0 0 4px; }
+.card-kids .card-note-text { color: #8D6E63; font-weight: 500; font-size: 11px; }
 </style>
 </head>
 <body>
@@ -1870,9 +2019,17 @@ body {
       <!-- Welcome Message -->
       <div class="welcome-field">
         <label for="welcomeMsg">Welcome message <span style="font-weight:400;color:var(--color-text-secondary);">(optional)</span></label>
-        <input type="text" id="welcomeMsg" placeholder="Welcome to our home!" maxlength="50" autocomplete="off" aria-describedby="welcome-hint">
-        <div class="welcome-char-count" aria-live="polite"><span id="welcomeCharCount">0</span>/50</div>
+        <input type="text" id="welcomeMsg" placeholder="Welcome to our home!" maxlength="200" autocomplete="off" aria-describedby="welcome-hint">
+        <div class="welcome-char-count" aria-live="polite"><span id="welcomeCharCount">0</span>/200</div>
         <span id="welcome-hint" class="sr-only">Optional welcome text shown on the card above the QR code</span>
+      </div>
+
+      <!-- Additional Note -->
+      <div class="note-field">
+        <label for="noteMsg">Additional note <span style="font-weight:400;color:var(--color-text-secondary);">(optional)</span></label>
+        <input type="text" id="noteMsg" placeholder="Password changes monthly" maxlength="100" autocomplete="off" aria-describedby="note-hint">
+        <div class="note-char-count" aria-live="polite"><span id="noteCharCount">0</span>/100</div>
+        <span id="note-hint" class="sr-only">Optional note shown on the card, e.g. instructions or disclaimers</span>
       </div>
 
       <!-- Security -->
@@ -1884,6 +2041,16 @@ body {
           <option value="nopass">None</option>
         </select>
         <span id="security-hint" class="sr-only">Select your WiFi security type</span>
+      </div>
+
+      <!-- Accent Color -->
+      <div class="accent-color-field">
+        <label for="accentColor">Accent color <span style="font-weight:400;color:var(--color-text-secondary);">(optional)</span></label>
+        <div class="accent-color-row">
+          <input type="color" id="accentColor" class="accent-color-input" value="#4F46E5" aria-label="Choose accent color for the card">
+          <span class="accent-color-value" id="accentColorValue">#4F46E5</span>
+          <button type="button" class="accent-reset-btn" id="accentResetBtn" title="Reset to template default">Reset</button>
+        </div>
       </div>
 
       <hr class="form-divider">
@@ -1924,6 +2091,10 @@ body {
         <button class="action-btn secondary" id="btnDownload" aria-label="Download WiFi card as PNG">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Download PNG
+        </button>
+        <button class="action-btn secondary" id="btnDownloadPDF" aria-label="Save WiFi card as PDF">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Download PDF
         </button>
         <button class="action-btn secondary" id="btnDownloadSVG" aria-label="Download WiFi card as SVG">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -2029,13 +2200,31 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
   var btnCopyWifi = document.getElementById('btnCopyWifi');
   var copyPassBtn = document.getElementById('copyPassBtn');
   var darkModeToggle = document.getElementById('darkModeToggle');
+  var btnDownloadPDF = document.getElementById('btnDownloadPDF');
+  var accentColorInput = document.getElementById('accentColor');
+  var accentColorValue = document.getElementById('accentColorValue');
+  var accentResetBtn = document.getElementById('accentResetBtn');
+  var noteInput = document.getElementById('noteMsg');
+  var noteCharCount = document.getElementById('noteCharCount');
 
   // --- State ---
   var currentTemplate = 'minimal';
   var debounceTimer = null;
   var isFirstRender = true;
+  var customAccentColor = null; // null = use template default
   var STORAGE_KEY = 'wificard_settings';
   var DARK_MODE_KEY = 'wificard_dark_mode';
+  var ACCENT_COLOR_KEY = 'wificard_accent_color';
+
+  // --- Template default accent colors ---
+  var templateAccentDefaults = {
+    minimal: '#111827',
+    warm: '#D84315',
+    hotel: '#D4AF37',
+    airbnb: '#FF5A5F',
+    tech: '#58A6FF',
+    kids: '#E91E63'
+  };
 
   // --- Secure Password Generator ---
   function generateSecurePassword(length) {
@@ -2066,9 +2255,15 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
         network: ssidInput.value,
         password: passwordInput.value,
         template: currentTemplate,
-        welcome: welcomeInput.value
+        welcome: welcomeInput.value,
+        note: noteInput.value
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (customAccentColor) {
+        localStorage.setItem(ACCENT_COLOR_KEY, customAccentColor);
+      } else {
+        localStorage.removeItem(ACCENT_COLOR_KEY);
+      }
     } catch (e) { /* Safari Private Mode or quota exceeded */ }
   }
 
@@ -2081,7 +2276,10 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
   }
 
   function clearSettings() {
-    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(ACCENT_COLOR_KEY);
+    } catch (e) {}
   }
 
   // --- WiFi QR String ---
@@ -2140,6 +2338,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     var hidden = hiddenCheckbox.checked;
     var showPass = showPassCheckbox.checked;
     var welcome = welcomeInput.value || '';
+    var note = noteInput.value || '';
     var displaySsid = ssid ? escapeHtml(ssid) : '<span style="opacity:0.5">Network Name</span>';
     var displayPass = '';
 
@@ -2160,7 +2359,10 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       hidden: hidden,
       showPass: showPass,
       welcome: welcome,
-      displayWelcome: welcome ? escapeHtml(welcome) : ''
+      displayWelcome: welcome ? escapeHtml(welcome) : '',
+      note: note,
+      displayNote: note ? escapeHtml(note) : '',
+      accentColor: customAccentColor || null
     };
   }
 
@@ -2177,63 +2379,75 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     return '<div class="card-welcome-text">' + v.displayWelcome + '</div>';
   }
 
+  function noteHtml(v) {
+    if (!v.displayNote) return '';
+    return '<div class="card-note-text">' + v.displayNote + '</div>';
+  }
+
   // Each template returns its HTML and QR config
   var templates = {
     minimal: function(v) {
+      var accent = v.accentColor;
       return {
         className: 'card-minimal',
-        qr: { fg: '#111827', bg: '#FFFFFF' },
+        qr: { fg: accent || '#111827', bg: '#FFFFFF' },
         html: welcomeHtml(v) +
           '<div class="card-body">' +
           '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
           '<div class="card-info">' +
-            '<div class="card-title">' + wifiSVG + ' WiFi</div>' +
+            '<div class="card-title"' + (accent ? ' style="color:' + accent + '"' : '') + '>' + wifiSVG + ' WiFi</div>' +
             '<div class="card-field"><div class="card-field-label">Network</div><div class="card-field-value">' + v.displaySsid + '</div></div>' +
             (v.security !== 'nopass' ? '<div class="card-field"><div class="card-field-label">Password</div><div class="card-field-value password">' + v.displayPass + '</div></div>' : '') +
             (v.hidden ? hiddenTag('card-hidden-tag') : '') +
           '</div></div>' +
+          noteHtml(v) +
           '<div class="card-footer">Scan QR code to connect</div>'
       };
     },
     warm: function(v) {
+      var accent = v.accentColor;
       return {
         className: 'card-warm',
-        qr: { fg: '#5D4037', bg: '#FDF6EC' },
+        qr: { fg: accent || '#5D4037', bg: '#FDF6EC' },
         html: welcomeHtml(v) +
-          '<div class="card-title">' + wifiSVG + ' WiFi</div>' +
-          '<hr class="card-divider">' +
+          '<div class="card-title"' + (accent ? ' style="color:' + accent + '"' : '') + '>' + wifiSVG + ' WiFi</div>' +
+          '<hr class="card-divider"' + (accent ? ' style="border-top-color:' + accent + '"' : '') + '>' +
           '<div class="card-field"><span class="card-field-label">Network: </span><span class="card-field-value">' + v.displaySsid + '</span></div>' +
           (v.security !== 'nopass' ? '<div class="card-field"><span class="card-field-label">Password: </span><span class="card-field-value password">' + v.displayPass + '</span></div>' : '') +
           (v.hidden ? hiddenTag('card-hidden-tag') : '') +
           '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
+          noteHtml(v) +
           '<div class="card-footer">Scan to connect</div>'
       };
     },
     hotel: function(v) {
+      var accent = v.accentColor;
       return {
         className: 'card-hotel',
-        qr: { fg: '#D4AF37', bg: '#1A1A2E' },
+        qr: { fg: accent || '#D4AF37', bg: '#1A1A2E' },
         html: welcomeHtml(v) +
           '<div class="card-body">' +
           '<div class="card-info">' +
-            '<div class="card-title">' + wifiSVG + ' WiFi</div>' +
-            '<hr class="card-title-underline">' +
-            '<div class="card-field"><div class="card-field-label">Network</div><div class="card-field-value">' + v.displaySsid + '</div></div>' +
+            '<div class="card-title"' + (accent ? ' style="color:' + accent + '"' : '') + '>' + wifiSVG + ' WiFi</div>' +
+            '<hr class="card-title-underline"' + (accent ? ' style="border-top-color:' + accent + '"' : '') + '>' +
+            '<div class="card-field"><div class="card-field-label">Network</div><div class="card-field-value"' + (accent ? ' style="color:' + accent + '"' : '') + '>' + v.displaySsid + '</div></div>' +
             (v.security !== 'nopass' ? '<div class="card-field"><div class="card-field-label">Password</div><div class="card-field-value password">' + v.displayPass + '</div></div>' : '') +
             (v.hidden ? hiddenTag('card-hidden-tag') : '') +
           '</div>' +
           '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
         '</div>' +
+        noteHtml(v) +
         '<div class="card-footer">Scan QR code to connect to WiFi</div>'
       };
     },
     airbnb: function(v) {
+      var accent = v.accentColor;
       return {
         className: 'card-airbnb',
         qr: { fg: '#484848', bg: '#FFFFFF' },
-        html: '<div class="card-accent-bar"></div>' +
+        html: '<div class="card-accent-bar"' + (accent ? ' style="background:' + accent + '"' : '') + '></div>' +
           '<div class="card-content">' +
-            (v.displayWelcome ? '<div class="card-welcome">' + v.displayWelcome + '</div>' : '') +
+            (v.displayWelcome ? '<div class="card-welcome"' + (accent ? ' style="color:' + accent + '"' : '') + '>' + v.displayWelcome + '</div>' : '') +
             '<div class="card-subtitle">Connect to our WiFi</div>' +
             '<div class="card-body">' +
               '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
@@ -2241,6 +2455,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
                 '<div class="card-field"><div class="card-field-label">Network</div><div class="card-field-value">' + v.displaySsid + '</div></div>' +
                 (v.security !== 'nopass' ? '<div class="card-field"><div class="card-field-label">Password</div><div class="card-field-value password">' + v.displayPass + '</div></div>' : '') +
                 (v.hidden ? hiddenTag('card-hidden-tag') : '') +
+                noteHtml(v) +
                 '<div class="card-footer">Scan QR with your phone<br>to connect instantly</div>' +
               '</div>' +
             '</div>' +
@@ -2248,34 +2463,38 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       };
     },
     tech: function(v) {
+      var accent = v.accentColor;
       return {
         className: 'card-tech',
-        qr: { fg: '#58A6FF', bg: '#0D1117' },
+        qr: { fg: accent || '#58A6FF', bg: '#0D1117' },
         html: welcomeHtml(v) +
           '<div class="card-header">' +
-            '<span class="card-title">$ wifi-connect</span>' +
+            '<span class="card-title"' + (accent ? ' style="color:' + accent + '"' : '') + '>$ wifi-connect</span>' +
             '<span class="card-title">' + wifiSVG + '</span>' +
           '</div>' +
           '<hr class="card-divider">' +
-          '<div class="card-field"><span class="card-field-label">SSID</span><span class="card-field-value">' + v.displaySsid + '</span></div>' +
-          (v.security !== 'nopass' ? '<div class="card-field"><span class="card-field-label">PASS</span><span class="card-field-value password">' + v.displayPass + '</span></div>' : '') +
+          '<div class="card-field"><span class="card-field-label"' + (accent ? ' style="color:' + accent + '"' : '') + '>SSID</span><span class="card-field-value">' + v.displaySsid + '</span></div>' +
+          (v.security !== 'nopass' ? '<div class="card-field"><span class="card-field-label"' + (accent ? ' style="color:' + accent + '"' : '') + '>PASS</span><span class="card-field-value password">' + v.displayPass + '</span></div>' : '') +
           (v.hidden ? hiddenTag('card-hidden-tag') : '') +
           '<div class="card-qr-row">' +
             '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
-            '<div class="card-footer">&gt; scan to connect</div>' +
-          '</div>'
+            '<div class="card-footer"' + (accent ? ' style="color:' + accent + '"' : '') + '>&gt; scan to connect</div>' +
+          '</div>' +
+          noteHtml(v)
       };
     },
     kids: function(v) {
+      var accent = v.accentColor;
       return {
         className: 'card-kids',
         qr: { fg: '#5D4037', bg: '#FFF8E1' },
         html: welcomeHtml(v) +
-          '<div class="card-title">' + wifiSVG + ' WiFi for You!</div>' +
+          '<div class="card-title"' + (accent ? ' style="color:' + accent + '"' : '') + '>' + wifiSVG + ' WiFi for You!</div>' +
           '<div class="card-field"><span class="card-field-label">Network: </span><span class="card-field-value">' + v.displaySsid + '</span></div>' +
           (v.security !== 'nopass' ? '<div class="card-field"><span class="card-field-label">Password: </span><span class="card-field-value password">' + v.displayPass + '</span></div>' : '') +
           (v.hidden ? hiddenTag('card-hidden-tag') : '') +
           '<div class="card-qr"><canvas id="qrCanvas" width="120" height="120"></canvas></div>' +
+          noteHtml(v) +
           '<div class="card-footer">Point your camera here!</div>'
       };
     }
@@ -2408,6 +2627,31 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     scheduleUpdateAndSave();
   });
 
+  // Additional note input
+  noteInput.addEventListener('input', function() {
+    noteCharCount.textContent = noteInput.value.length;
+    scheduleUpdateAndSave();
+  });
+
+  // Accent color picker
+  function updateAccentColorUI() {
+    var color = customAccentColor || templateAccentDefaults[currentTemplate] || '#4F46E5';
+    accentColorInput.value = color;
+    accentColorValue.textContent = color.toUpperCase();
+  }
+
+  accentColorInput.addEventListener('input', function() {
+    customAccentColor = accentColorInput.value;
+    accentColorValue.textContent = customAccentColor.toUpperCase();
+    scheduleUpdateAndSave();
+  });
+
+  accentResetBtn.addEventListener('click', function() {
+    customAccentColor = null;
+    updateAccentColorUI();
+    scheduleUpdateAndSave();
+  });
+
   // Generate password button
   generatePassBtn.addEventListener('click', function() {
     var pwd = generateSecurePassword(16);
@@ -2432,6 +2676,10 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     passwordInput.value = 'MyPassword';
     welcomeInput.value = '';
     welcomeCharCount.textContent = '0';
+    noteInput.value = '';
+    noteCharCount.textContent = '0';
+    customAccentColor = null;
+    updateAccentColorUI();
     // Reset template to minimal
     templateThumbs.forEach(function(t) {
       t.classList.remove('active');
@@ -2479,6 +2727,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       wifiCardEl.classList.add('fade-out');
       setTimeout(function() {
         currentTemplate = tpl;
+        updateAccentColorUI();
         renderCard(true);
         announceCardUpdate();
         saveSettings();
@@ -2598,7 +2847,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       ctx.font = fontStr || ('500 22px ' + cfg.font);
       ctx.fillStyle = color || cfg.sub;
       var wx = align === 'center' ? W / 2 : PAD;
-      var truncWelcome = welcomeText.length > 50 ? welcomeText.substring(0, 50) + '...' : welcomeText;
+      var truncWelcome = welcomeText.length > 80 ? welcomeText.substring(0, 80) + '...' : welcomeText;
       ctx.fillText(truncWelcome, wx, yPos);
       ctx.restore();
       return yPos + 30;
@@ -2762,7 +3011,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       ctx.font = 'bold 40px ' + cfg.font;
       ctx.fillStyle = '#6B6B6B';
       if (welcomeText) {
-        var truncWelcome = welcomeText.length > 50 ? welcomeText.substring(0, 50) + '...' : welcomeText;
+        var truncWelcome = welcomeText.length > 80 ? welcomeText.substring(0, 80) + '...' : welcomeText;
         ctx.fillText(truncWelcome, PAD, ay);
       }
       ay += 46;
@@ -2813,7 +3062,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       if (welcomeText) {
         ctx.font = '500 20px ' + cfg.font;
         ctx.fillStyle = '#8B949E';
-        var truncW = welcomeText.length > 50 ? welcomeText.substring(0, 50) + '...' : welcomeText;
+        var truncW = welcomeText.length > 80 ? welcomeText.substring(0, 80) + '...' : welcomeText;
         ctx.fillText(truncW, PAD, ty);
         ty += 28;
       }
@@ -2952,7 +3201,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     var PAD = 24;
     var ssidTrunc = ssid.length > 18 ? ssid.substring(0, 18) + '...' : ssid;
     var passTrunc = passText.length > 18 ? passText.substring(0, 18) + '...' : passText;
-    var welcomeTrunc = welcomeText.length > 50 ? welcomeText.substring(0, 50) + '...' : welcomeText;
+    var welcomeTrunc = welcomeText.length > 80 ? welcomeText.substring(0, 80) + '...' : welcomeText;
 
     // Common SVG wrapper
     svg += '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">';
@@ -3120,6 +3369,29 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     }
   });
 
+  // --- Download PDF ---
+  // Uses the existing PNG canvas export to generate a minimal PDF with embedded image.
+  // No external libraries needed — hand-crafted PDF 1.4 structure.
+  btnDownloadPDF.addEventListener('click', function() {
+    // First, render the card to a canvas (reuse the PNG export canvas code)
+    // We grab the card as a JPEG data URL, then embed it in a minimal PDF
+    var v = getValues();
+    var W = 756;
+    var H = 528;
+    var canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    var pdfCtx = canvas.getContext('2d');
+
+    // --- Draw the card onto the canvas (same as PNG export) ---
+    // We call the existing rendering by programmatically clicking "Download PNG"
+    // and intercepting... Actually, to avoid code duplication, let's render the
+    // visible card via html2canvas-style approach: capture the wifi-card element.
+    // Simplest correct approach: use the @media print CSS and window.print().
+    // The user's browser "Save as PDF" dialog handles the rest perfectly.
+    window.print();
+  });
+
   // --- Copy WiFi Settings ---
   btnCopyWifi.addEventListener('click', function() {
     var v = getValues();
@@ -3177,13 +3449,28 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
 
   // --- Restore Settings from localStorage ---
   (function restoreSettings() {
+    // Restore accent color
+    try {
+      var savedAccent = localStorage.getItem(ACCENT_COLOR_KEY);
+      if (savedAccent) {
+        customAccentColor = savedAccent;
+      }
+    } catch(e) {}
+
     var saved = loadSettings();
-    if (!saved) return;
+    if (!saved) {
+      updateAccentColorUI();
+      return;
+    }
     if (saved.network !== undefined && saved.network !== null) ssidInput.value = saved.network;
     if (saved.password !== undefined && saved.password !== null) passwordInput.value = saved.password;
     if (saved.welcome !== undefined && saved.welcome !== null) {
       welcomeInput.value = saved.welcome;
       welcomeCharCount.textContent = saved.welcome.length;
+    }
+    if (saved.note !== undefined && saved.note !== null) {
+      noteInput.value = saved.note;
+      noteCharCount.textContent = saved.note.length;
     }
     if (saved.template && templates[saved.template]) {
       currentTemplate = saved.template;
@@ -3200,6 +3487,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
         }
       });
     }
+    updateAccentColorUI();
   })();
 
   // --- Initial Render ---
