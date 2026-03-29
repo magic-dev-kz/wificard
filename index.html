@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WifiCard v7.0 -->
+<!-- WifiCard v8.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1657,6 +1657,146 @@ body {
 }
 
 /* ============================================
+   v8: Card Flip Animation on Template Change
+   ============================================ */
+.wifi-card.card-flip-out {
+  animation: cardFlipOut 0.3s ease forwards;
+  transform-style: preserve-3d;
+}
+.wifi-card.card-flip-in {
+  animation: cardFlipIn 0.3s ease forwards;
+  transform-style: preserve-3d;
+}
+@keyframes cardFlipOut {
+  0% { transform: perspective(800px) rotateY(0); opacity: 1; }
+  100% { transform: perspective(800px) rotateY(90deg); opacity: 0; }
+}
+@keyframes cardFlipIn {
+  0% { transform: perspective(800px) rotateY(-90deg); opacity: 0; }
+  100% { transform: perspective(800px) rotateY(0); opacity: 1; }
+}
+
+/* v8: Batch Mode */
+.batch-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+.batch-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: 1.5px dashed var(--color-accent);
+  border-radius: 10px;
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 100%;
+  justify-content: center;
+}
+.batch-add-btn:hover {
+  background: var(--color-accent);
+  color: #fff;
+  border-style: solid;
+}
+.batch-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.batch-add-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.batch-network-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  margin-top: 8px;
+  animation: cardIn 0.3s ease;
+  font-size: 14px;
+}
+.batch-network-item .batch-ssid {
+  flex: 1;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.batch-network-item .batch-remove {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+.batch-network-item .batch-remove:hover {
+  color: #EF4444;
+  background: rgba(239,68,68,0.1);
+}
+.batch-count {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 6px;
+}
+
+/* v8: QR Error Correction Level */
+.qr-ec-field {
+  margin-top: 16px;
+}
+.qr-ec-field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+.qr-ec-field select {
+  width: 100%;
+  height: 44px;
+  padding: 8px 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-surface);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.qr-ec-field select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-accent-light);
+}
+
+/* v8: Print multiple cards */
+@media print {
+  .batch-print-page {
+    display: block !important;
+  }
+  .batch-print-page .wifi-card {
+    margin: 24px auto;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+
+/* ============================================
    Reduced Motion
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
@@ -2353,6 +2493,17 @@ body {
         </div>
       </div>
 
+      <!-- v8: QR Error Correction Level -->
+      <div class="qr-ec-field">
+        <label for="qrErrorLevel">QR error correction</label>
+        <select id="qrErrorLevel" aria-describedby="qr-ec-hint">
+          <option value="L">Low (7%)</option>
+          <option value="M" selected>Medium (15%)</option>
+          <option value="H">High (30%)</option>
+        </select>
+        <span id="qr-ec-hint" class="sr-only">Higher error correction makes QR codes scannable even if partially damaged</span>
+      </div>
+
       <hr class="form-divider">
 
       <!-- Toggles -->
@@ -2371,6 +2522,13 @@ body {
             <span class="slider" aria-hidden="true"></span>
           </div>
         </div>
+      </div>
+
+      <!-- v8: Batch Mode -->
+      <div class="batch-section">
+        <div class="batch-count" id="batchCount" style="display:none"></div>
+        <div id="batchList"></div>
+        <button type="button" class="batch-add-btn" id="batchAddBtn" aria-label="Add another network to batch">+ Add Another Network</button>
       </div>
     </section>
 
@@ -3880,6 +4038,231 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     var w = Math.max(40, Math.min(400, parseInt(cardCustomW.value) || 148));
     var h = Math.max(30, Math.min(300, parseInt(this.value) || 105));
     applyCardSize(Math.round(w * 2.55), Math.round(h * 2.55));
+  });
+
+  // --- v8: QR Error Correction Level ---
+  var qrErrorLevelSelect = document.getElementById('qrErrorLevel');
+  qrErrorLevelSelect.addEventListener('change', scheduleUpdateAndSave);
+
+  // Override renderQR to use selected error correction level
+  var _origRenderQR = renderQR;
+  renderQR = function(canvasEl, text, size, fg, bg) {
+    var ecLevel = qrErrorLevelSelect ? qrErrorLevelSelect.value : 'M';
+    var qr = qrcode(text, ecLevel);
+    var ctx = canvasEl.getContext('2d');
+    var moduleCount = qr.getModuleCount();
+    canvasEl.width = size;
+    canvasEl.height = size;
+    var cellSize = size / moduleCount;
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = fg;
+    for (var r = 0; r < moduleCount; r++) {
+      for (var c = 0; c < moduleCount; c++) {
+        if (qr.isDark(r, c)) {
+          ctx.fillRect(Math.round(c * cellSize), Math.round(r * cellSize),
+                       Math.ceil(cellSize), Math.ceil(cellSize));
+        }
+      }
+    }
+  };
+
+  // --- v8: Card Flip Animation on Template Change ---
+  // Override template click to use flip animation instead of fade
+  templateThumbs.forEach(function(thumb) {
+    // Remove old click listeners by cloning
+    var newThumb = thumb.cloneNode(true);
+    thumb.parentNode.replaceChild(newThumb, thumb);
+  });
+  // Re-query after cloning
+  templateThumbs = document.querySelectorAll('.template-thumb');
+  templateThumbs.forEach(function(thumb) {
+    thumb.addEventListener('click', function() {
+      var tpl = this.getAttribute('data-template');
+      if (tpl === currentTemplate) return;
+
+      templateThumbs.forEach(function(t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-checked', 'false');
+        t.setAttribute('tabindex', '-1');
+      });
+      this.classList.add('active');
+      this.setAttribute('aria-checked', 'true');
+      this.setAttribute('tabindex', '0');
+
+      // 3D flip animation
+      wifiCardEl.classList.remove('fade-out', 'template-fade-in', 'card-flip-in');
+      wifiCardEl.classList.add('card-flip-out');
+      setTimeout(function() {
+        currentTemplate = tpl;
+        updateAccentColorUI();
+        renderCard(false);
+        announceCardUpdate();
+        saveSettings();
+        wifiCardEl.classList.remove('card-flip-out');
+        wifiCardEl.classList.add('card-flip-in');
+        setTimeout(function() {
+          wifiCardEl.classList.remove('card-flip-in');
+        }, 300);
+      }, 300);
+    });
+
+    thumb.addEventListener('keydown', function(e) {
+      var thumbsArr = Array.from(templateThumbs);
+      var idx = thumbsArr.indexOf(this);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        var next = thumbsArr[(idx + 1) % thumbsArr.length];
+        next.focus();
+        next.click();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        var prev = thumbsArr[(idx - 1 + thumbsArr.length) % thumbsArr.length];
+        prev.focus();
+        prev.click();
+      }
+    });
+  });
+
+  // --- v8: Batch Mode ---
+  var batchNetworks = []; // array of {ssid, password, security, hidden}
+  var batchAddBtn = document.getElementById('batchAddBtn');
+  var batchList = document.getElementById('batchList');
+  var batchCountEl = document.getElementById('batchCount');
+  var MAX_BATCH = 3;
+
+  function renderBatchList() {
+    if (batchNetworks.length === 0) {
+      batchList.innerHTML = '';
+      batchCountEl.style.display = 'none';
+      batchAddBtn.disabled = false;
+      batchAddBtn.textContent = '+ Add Another Network';
+      return;
+    }
+    batchCountEl.style.display = 'block';
+    batchCountEl.textContent = (batchNetworks.length + 1) + '/' + MAX_BATCH + ' networks (current + saved)';
+    batchAddBtn.disabled = (batchNetworks.length + 1) >= MAX_BATCH;
+    batchAddBtn.textContent = batchAddBtn.disabled ? 'Maximum 3 networks' : '+ Add Another Network';
+
+    batchList.innerHTML = batchNetworks.map(function(net, i) {
+      return '<div class="batch-network-item">' +
+        '<span class="batch-ssid">' + escapeHtml(net.ssid || 'No name') + '</span>' +
+        '<button type="button" class="batch-remove" data-batch-idx="' + i + '" aria-label="Remove ' + escapeHtml(net.ssid) + '">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+        '</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  batchAddBtn.addEventListener('click', function() {
+    if ((batchNetworks.length + 1) >= MAX_BATCH) return;
+    // Save current form values as a batch network
+    var net = {
+      ssid: ssidInput.value || '',
+      password: passwordInput.value || '',
+      security: securitySelect.value,
+      hidden: hiddenCheckbox.checked,
+      showPass: showPassCheckbox.checked,
+      welcome: welcomeInput.value || '',
+      note: noteInput.value || ''
+    };
+    if (!net.ssid.trim()) {
+      ssidInput.focus();
+      return;
+    }
+    batchNetworks.push(net);
+    renderBatchList();
+    // Clear form for next network
+    ssidInput.value = '';
+    passwordInput.value = '';
+    welcomeInput.value = '';
+    welcomeCharCount.textContent = '0';
+    noteInput.value = '';
+    noteCharCount.textContent = '0';
+    ssidInput.focus();
+    scheduleUpdate();
+  });
+
+  batchList.addEventListener('click', function(e) {
+    var btn = e.target.closest('.batch-remove');
+    if (!btn) return;
+    var idx = parseInt(btn.getAttribute('data-batch-idx'), 10);
+    batchNetworks.splice(idx, 1);
+    renderBatchList();
+  });
+
+  // Override print to handle batch mode
+  var _origPrintHandler = btnPrint.onclick;
+  btnPrint.removeEventListener('click', function() { window.print(); });
+  btnPrint.addEventListener('click', function(e) {
+    if (batchNetworks.length === 0) {
+      window.print();
+      return;
+    }
+    // Create a temporary container with all cards for printing
+    var allNets = batchNetworks.slice();
+    // Add current form as the last network
+    allNets.push({
+      ssid: ssidInput.value || '',
+      password: passwordInput.value || '',
+      security: securitySelect.value,
+      hidden: hiddenCheckbox.checked,
+      showPass: showPassCheckbox.checked,
+      welcome: welcomeInput.value || '',
+      note: noteInput.value || ''
+    });
+
+    // Save current card HTML
+    var origCardHTML = wifiCardEl.innerHTML;
+    var origCardClass = wifiCardEl.className;
+
+    // Build print container with multiple cards
+    var printContainer = document.createElement('div');
+    printContainer.className = 'batch-print-page';
+    printContainer.style.display = 'none';
+    printContainer.id = 'batchPrintContainer';
+
+    allNets.forEach(function(net) {
+      // Temporarily set form values to this network
+      ssidInput.value = net.ssid;
+      passwordInput.value = net.password;
+      securitySelect.value = net.security;
+      hiddenCheckbox.checked = net.hidden;
+      showPassCheckbox.checked = net.showPass;
+      welcomeInput.value = net.welcome || '';
+      noteInput.value = net.note || '';
+      renderCard(false);
+
+      var cardClone = wifiCardEl.cloneNode(true);
+      cardClone.id = '';
+      cardClone.style.margin = '24px auto';
+      printContainer.appendChild(cardClone);
+    });
+
+    // Restore last network (current form)
+    var last = allNets[allNets.length - 1];
+    ssidInput.value = last.ssid;
+    passwordInput.value = last.password;
+    securitySelect.value = last.security;
+    hiddenCheckbox.checked = last.hidden;
+    showPassCheckbox.checked = last.showPass;
+    welcomeInput.value = last.welcome || '';
+    noteInput.value = last.note || '';
+    renderCard(false);
+
+    // Insert print container and print
+    var cardContainer = document.querySelector('.card-container');
+    cardContainer.appendChild(printContainer);
+
+    // Temporarily hide the main card and show print container
+    wifiCardEl.style.display = 'none';
+    printContainer.style.display = 'block';
+
+    window.print();
+
+    // Restore
+    wifiCardEl.style.display = '';
+    printContainer.remove();
   });
 
   // --- Initial Render ---

@@ -1,5 +1,18 @@
 # WifiCard — Changelog
 
+## v8.0 (2026-03-29)
+### Added
+- **Batch Mode** — "Add Another Network" button saves current form as a batch entry (up to 3 networks total); batch list shown below form with remove buttons; Print renders all cards on one page for multi-network households/venues
+- **QR Error Correction Level** — dropdown to select Low (7%), Medium (15%, default), or High (30%) error correction; higher levels make QR codes scannable even when partially obscured or damaged
+- **Card Flip Animation** — template switching now uses a 3D flip transition (rotateY) instead of fade, giving a card-turning visual effect
+
+### Changed
+- Version bumped to v8.0
+- SW cache bumped to `wificard-v8.0`
+- QR generation now respects selected error correction level across all renders (HTML card, PNG export, SVG export)
+
+---
+
 ## v7.0 (2026-03-29)
 ### Added
 - **Auto-save form (complete)** — security type and hidden network checkbox now also persisted in localStorage alongside SSID, password, welcome, note, template, and accent color; all fields fully restored on load
