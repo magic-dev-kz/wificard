@@ -1,5 +1,17 @@
 # WifiCard — Changelog
 
+## v9.0 (2026-03-29)
+### Added
+- **Card Hover Parallax Effect** — subtle 3D tilt on the preview card when hovering; CSS perspective (800px) with rotateX/rotateY driven by mouse position (max ±5deg); smooth reset transition on mouse leave
+- **Share on X Button** — "Share on X" action button opens a pre-filled tweet ("Just made a beautiful WiFi card for my guests") with link to WifiCard; uses X intent URL in a popup window
+- **Card Stats Info Bar** — small info bar below the preview card showing current card dimensions, QR size, and active template name; auto-updates on template switch, card resize, and all renders
+
+### Changed
+- Version bumped to v9.0
+- SW cache bumped to `wificard-v9.0`
+
+---
+
 ## v8.0 (2026-03-29)
 ### Added
 - **Batch Mode** — "Add Another Network" button saves current form as a batch entry (up to 3 networks total); batch list shown below form with remove buttons; Print renders all cards on one page for multi-network households/venues
