@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WifiCard v6.0 -->
+<!-- WifiCard v7.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1780,6 +1780,70 @@ body {
 .wificard-onb-cta:active {
   transform: scale(0.97);
 }
+/* v7: PWA Install Banner */
+.pwa-install-banner {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.10);
+  padding: 14px 20px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-ui);
+  animation: pwaSlideUp 0.35s ease both;
+}
+.pwa-install-banner.visible { display: flex; }
+.pwa-install-banner__text {
+  font-size: 14px;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+.pwa-install-banner__text strong { font-weight: 700; }
+.pwa-install-banner__actions { display: flex; gap: 8px; flex-shrink: 0; }
+.pwa-install-banner__btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-ui);
+}
+.pwa-install-banner__btn--install {
+  background: var(--gradient-accent);
+  color: #fff;
+}
+.pwa-install-banner__btn--dismiss {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+@keyframes pwaSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* v7: Keyboard Shortcut Hints */
+.kbd-hint {
+  display: inline-block;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 6px;
+  vertical-align: middle;
+  line-height: 1.6;
+}
+
 .oc-footer{text-align:center;padding:20px 16px 24px;margin-top:24px}
 .oc-footer a{font-size:.78rem;color:var(--text-muted,var(--text-secondary,#888));text-decoration:none;opacity:.6;transition:opacity .2s}
 .oc-footer a:hover{opacity:1}
@@ -2322,11 +2386,11 @@ body {
       <div class="actions">
         <button class="action-btn primary" id="btnPrint" aria-label="Print WiFi card">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          Print
+          Print <span class="kbd-hint">Ctrl+P</span>
         </button>
         <button class="action-btn secondary" id="btnDownload" aria-label="Download WiFi card as PNG">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download PNG
+          Download PNG <span class="kbd-hint">Ctrl+D</span>
         </button>
         <button class="action-btn secondary" id="btnDownloadPDF" aria-label="Save WiFi card as PDF">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -2502,7 +2566,9 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
         password: passwordInput.value,
         template: currentTemplate,
         welcome: welcomeInput.value,
-        note: noteInput.value
+        note: noteInput.value,
+        security: securitySelect.value,
+        hidden: hiddenCheckbox.checked
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       if (customAccentColor) {
@@ -2871,7 +2937,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     }
     scheduleUpdateAndSave();
   });
-  hiddenCheckbox.addEventListener('change', scheduleUpdate);
+  hiddenCheckbox.addEventListener('change', scheduleUpdateAndSave);
   showPassCheckbox.addEventListener('change', scheduleUpdate);
 
   // Welcome message input
@@ -3717,6 +3783,15 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     }
     if (saved.network !== undefined && saved.network !== null) ssidInput.value = saved.network;
     if (saved.password !== undefined && saved.password !== null) passwordInput.value = saved.password;
+    if (saved.security) {
+      securitySelect.value = saved.security;
+      if (saved.security === 'nopass') {
+        passwordField.classList.add('collapsed');
+      }
+    }
+    if (saved.hidden === true) {
+      hiddenCheckbox.checked = true;
+    }
     if (saved.welcome !== undefined && saved.welcome !== null) {
       welcomeInput.value = saved.welcome;
       welcomeCharCount.textContent = saved.welcome.length;
@@ -3831,7 +3906,63 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(function(){});
 }
+
+// --- v7: PWA Install Prompt (after 2+ visits) ---
+(function() {
+  var VISIT_KEY = 'wificard_visit_count';
+  var DISMISSED_KEY = 'wificard_pwa_dismissed';
+  var deferredPrompt = null;
+
+  try {
+    var visits = parseInt(localStorage.getItem(VISIT_KEY) || '0', 10) + 1;
+    localStorage.setItem(VISIT_KEY, String(visits));
+
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (visits >= 2 && !localStorage.getItem(DISMISSED_KEY)) {
+        document.getElementById('pwaInstallBanner').classList.add('visible');
+      }
+    });
+
+    document.getElementById('pwaInstallBtn').addEventListener('click', function() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function() { deferredPrompt = null; });
+      }
+      document.getElementById('pwaInstallBanner').classList.remove('visible');
+    });
+
+    document.getElementById('pwaInstallDismiss').addEventListener('click', function() {
+      document.getElementById('pwaInstallBanner').classList.remove('visible');
+      try { localStorage.setItem(DISMISSED_KEY, '1'); } catch(e) {}
+    });
+  } catch(e) {}
+})();
+
+// --- v7: Keyboard Shortcuts ---
+document.addEventListener('keydown', function(e) {
+  // Ctrl+P / Cmd+P = Print/PDF
+  if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+    e.preventDefault();
+    var printBtn = document.getElementById('btnPrint');
+    if (printBtn) printBtn.click();
+  }
+  // Ctrl+D / Cmd+D = Download PNG
+  if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+    e.preventDefault();
+    var dlBtn = document.getElementById('btnDownload');
+    if (dlBtn) dlBtn.click();
+  }
+});
 </script>
+<div class="pwa-install-banner" id="pwaInstallBanner" role="banner">
+  <div class="pwa-install-banner__text"><strong>Install WifiCard</strong> for quick offline access</div>
+  <div class="pwa-install-banner__actions">
+    <button class="pwa-install-banner__btn pwa-install-banner__btn--dismiss" id="pwaInstallDismiss">Not now</button>
+    <button class="pwa-install-banner__btn pwa-install-banner__btn--install" id="pwaInstallBtn">Install</button>
+  </div>
+</div>
 <div class="oc-footer"><a href="https://magic-dev-kz.github.io/openclaw/" target="_blank" rel="noopener">More free tools → OpenClaw</a></div>
 </body>
 </html>

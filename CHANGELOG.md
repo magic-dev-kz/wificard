@@ -1,5 +1,28 @@
 # WifiCard — Changelog
 
+## v7.0 (2026-03-29)
+### Added
+- **Auto-save form (complete)** — security type and hidden network checkbox now also persisted in localStorage alongside SSID, password, welcome, note, template, and accent color; all fields fully restored on load
+- **PWA install prompt** — custom banner appears after 2+ visits when the browser fires `beforeinstallprompt`; "Install" triggers native install flow, "Not now" dismisses and remembers choice in localStorage
+- **Keyboard shortcuts** — `Ctrl+P` / `Cmd+P` triggers Print/PDF, `Ctrl+D` / `Cmd+D` triggers Download PNG; shortcut hints displayed as `<kbd>` badges on the action buttons
+
+### Changed
+- Version bump to v7.0
+- SW cache bumped to wificard-v7.0
+- Hidden network checkbox now triggers `scheduleUpdateAndSave` (was `scheduleUpdate` only)
+
+## v6.0 (2026-03-29)
+### Added
+- **Template Scroll Indicator** — fade-out gradient and animated arrow hint on the right edge of the template gallery when more templates are scrollable (mobile); disappears once user scrolls to the end
+- **QR Crossfade Animation** — smooth opacity transition (fade-out 150ms, fade-in 250ms) when QR code updates on input changes, instead of instant redraw
+- **Card Size Selector** — radio buttons to choose "A6 Card" (148x105mm, default), "Business Card" (85x55mm), or "Custom" (user-defined width/height in mm); updates `--card-width`, `--card-height`, and `--qr-size` CSS custom properties in real time
+- **Focus-visible on all interactive elements** — added `:focus-visible` outline to dark mode toggle, password visibility toggle, clear settings button, accent reset button, header logo, onboarding CTA, form inputs, selects, welcome field, note field, custom size inputs, and card size radio buttons
+
+### Changed
+- Version bump to v6.0
+- SW cache bumped to wificard-v6.0
+- Template gallery wrapped in `.template-scroll-wrapper` container for scroll indicator positioning
+
 ## v5.0 (2026-03-29)
 ### Added
 - **PDF Export (P0)** — "Download PDF" button next to Download PNG; uses browser's print-to-PDF via `window.print()` with existing `@media print` CSS rules for clean card-only output
