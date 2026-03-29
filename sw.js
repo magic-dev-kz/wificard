@@ -1,4 +1,4 @@
-const CACHE = 'wificard-v11.0';
+const CACHE = 'wificard-v12.0';
 const ASSETS = ['./index.html'];
 
 self.addEventListener('install', e => {

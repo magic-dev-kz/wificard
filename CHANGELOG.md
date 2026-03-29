@@ -1,5 +1,21 @@
 # WifiCard — Changelog
 
+## v12.0 (2026-03-29) — Zoom, Favorites & Sound
+
+### Added
+- **Card Preview Zoom** — pinch/scroll zoom on the card preview area (Ctrl+scroll or two-finger pinch); CSS transform scale with +/- controls and 1:1 reset button; range 50%-250%
+- **Template Favorites** — star button on each template thumbnail for quick access; favorited templates reorder to the front via CSS `order: -1`; persisted in localStorage
+- **Generation Sound** — soft "print" click sound synthesized via Web Audio API, plays on Print, Download PNG, Download PDF, and Download SVG actions
+
+### Changed
+- Version bumped to v12.0
+- SW cache bumped to `wificard-v12.0`
+
+### Preserved
+- All v11.x features intact (onboarding steps, card breathing shadow)
+
+---
+
 ## v11.0 (2026-03-29) — Micro-improvements
 
 ### Added

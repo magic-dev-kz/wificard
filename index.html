@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WifiCard v11.0 -->
+<!-- WifiCard v12.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -640,6 +640,43 @@ body {
   background-size: 20px 20px;
   border-radius: 16px;
   padding: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* v12: Card Preview Zoom */
+.card-zoom-wrapper {
+  transition: transform 0.2s ease;
+  transform-origin: center center;
+  touch-action: manipulation;
+}
+.card-zoom-controls {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.card-container:hover .card-zoom-controls { opacity: 1; }
+.card-zoom-controls button {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 16px; font-weight: 600;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.card-zoom-controls button:hover { background: var(--color-accent-light); color: var(--color-accent); }
+.card-zoom-level {
+  font-size: 11px; color: var(--color-text-secondary);
+  display: flex; align-items: center;
+  padding: 0 4px; user-select: none;
 }
 
 /* v11: breathing shadow when idle */
@@ -831,7 +868,40 @@ body {
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
+  position: relative;
 }
+
+/* v12: Template Favorites */
+.template-fav-btn {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; line-height: 1;
+  color: var(--color-text-secondary);
+  z-index: 3;
+  transition: transform var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+  opacity: 0;
+  padding: 0;
+}
+.template-item:hover .template-fav-btn,
+.template-fav-btn.favorited { opacity: 1; }
+.template-fav-btn:hover { transform: scale(1.2); }
+.template-fav-btn.favorited {
+  color: #F59E0B;
+  background: #FFFBEB;
+  border-color: #F59E0B;
+}
+[data-theme="dark"] .template-fav-btn.favorited {
+  background: #3D3329;
+  border-color: #F59E0B;
+}
+.template-scroll .template-item.is-favorite { order: -1; }
 
 /* ============================================
    Security Badge
@@ -2711,9 +2781,17 @@ body {
 
     <!-- Preview Panel -->
     <section class="preview-panel" aria-label="Card preview">
-      <div class="card-container">
-        <div class="wifi-card" id="wifiCard" aria-live="off" aria-label="WiFi card preview">
-          <!-- Card content rendered by JS -->
+      <div class="card-container" id="cardContainer">
+        <div class="card-zoom-wrapper" id="cardZoomWrapper">
+          <div class="wifi-card" id="wifiCard" aria-live="off" aria-label="WiFi card preview">
+            <!-- Card content rendered by JS -->
+          </div>
+        </div>
+        <div class="card-zoom-controls" id="cardZoomControls">
+          <button id="zoomOut" aria-label="Zoom out" type="button">-</button>
+          <span class="card-zoom-level" id="zoomLevel">100%</span>
+          <button id="zoomIn" aria-label="Zoom in" type="button">+</button>
+          <button id="zoomReset" aria-label="Reset zoom" type="button" style="font-size:12px">1:1</button>
         </div>
       </div>
 
@@ -2764,37 +2842,43 @@ body {
 <nav class="template-section" aria-label="Card templates">
   <div class="template-scroll-wrapper" id="templateScrollWrapper">
   <div class="template-scroll" id="templateScroll" role="radiogroup" aria-label="Card template">
-    <div class="template-item">
+    <div class="template-item" data-tpl="minimal">
+      <button class="template-fav-btn" aria-label="Favorite Minimal" data-fav="minimal" type="button">&#9734;</button>
       <button class="template-thumb active" role="radio" aria-checked="true" aria-label="Minimal template" data-template="minimal" tabindex="0">
         <div class="template-thumb-inner" style="background:#fff;border:1px solid #E5E7EB;color:#111827;">Minimal</div>
       </button>
       <span class="template-label">Minimal</span>
     </div>
-    <div class="template-item">
+    <div class="template-item" data-tpl="warm">
+      <button class="template-fav-btn" aria-label="Favorite Warm" data-fav="warm" type="button">&#9734;</button>
       <button class="template-thumb" role="radio" aria-checked="false" aria-label="Warm template" data-template="warm" tabindex="-1">
         <div class="template-thumb-inner" style="background:#FDF6EC;border:2px solid #D7CCC8;color:#5D4037;">Warm</div>
       </button>
       <span class="template-label">Warm</span>
     </div>
-    <div class="template-item">
+    <div class="template-item" data-tpl="hotel">
+      <button class="template-fav-btn" aria-label="Favorite Hotel" data-fav="hotel" type="button">&#9734;</button>
       <button class="template-thumb" role="radio" aria-checked="false" aria-label="Hotel template" data-template="hotel" tabindex="-1">
         <div class="template-thumb-inner" style="background:#1A1A2E;border:1px solid #D4AF37;color:#D4AF37;">Hotel</div>
       </button>
       <span class="template-label">Hotel</span>
     </div>
-    <div class="template-item">
+    <div class="template-item" data-tpl="airbnb">
+      <button class="template-fav-btn" aria-label="Favorite Airbnb" data-fav="airbnb" type="button">&#9734;</button>
       <button class="template-thumb" role="radio" aria-checked="false" aria-label="Airbnb template" data-template="airbnb" tabindex="-1">
         <div class="template-thumb-inner" style="background:#fff;border-top:4px solid #FF5A5F;color:#484848;box-shadow:0 1px 4px rgba(0,0,0,0.1);">Airbnb</div>
       </button>
       <span class="template-label">Airbnb</span>
     </div>
-    <div class="template-item">
+    <div class="template-item" data-tpl="tech">
+      <button class="template-fav-btn" aria-label="Favorite Tech" data-fav="tech" type="button">&#9734;</button>
       <button class="template-thumb" role="radio" aria-checked="false" aria-label="Tech template" data-template="tech" tabindex="-1">
         <div class="template-thumb-inner" style="background:#0D1117;border:1px solid #30363D;color:#58A6FF;">Tech</div>
       </button>
       <span class="template-label">Tech</span>
     </div>
-    <div class="template-item">
+    <div class="template-item" data-tpl="kids">
+      <button class="template-fav-btn" aria-label="Favorite Kids" data-fav="kids" type="button">&#9734;</button>
       <button class="template-thumb" role="radio" aria-checked="false" aria-label="Kids template" data-template="kids" tabindex="-1">
         <div class="template-thumb-inner" style="background:#FFF8E1;border:3px solid #FF9800;color:#E91E63;border-radius:12px;">Kids</div>
       </button>
@@ -4536,6 +4620,145 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     updateCardStats();
   };
   updateCardStats();
+
+  // --- v12: Card Preview Zoom ---
+  (function initCardZoom() {
+    var wrapper = document.getElementById('cardZoomWrapper');
+    var container = document.getElementById('cardContainer');
+    var zoomLevelEl = document.getElementById('zoomLevel');
+    var scale = 1;
+    var minScale = 0.5;
+    var maxScale = 2.5;
+    var step = 0.15;
+
+    function setZoom(s) {
+      scale = Math.max(minScale, Math.min(maxScale, s));
+      wrapper.style.transform = 'scale(' + scale + ')';
+      zoomLevelEl.textContent = Math.round(scale * 100) + '%';
+    }
+
+    document.getElementById('zoomIn').addEventListener('click', function() { setZoom(scale + step); });
+    document.getElementById('zoomOut').addEventListener('click', function() { setZoom(scale - step); });
+    document.getElementById('zoomReset').addEventListener('click', function() { setZoom(1); });
+
+    // Scroll wheel zoom
+    container.addEventListener('wheel', function(e) {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      var delta = e.deltaY > 0 ? -step : step;
+      setZoom(scale + delta);
+    }, { passive: false });
+
+    // Pinch zoom via touch
+    var lastPinchDist = 0;
+    container.addEventListener('touchstart', function(e) {
+      if (e.touches.length === 2) {
+        lastPinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      }
+    }, { passive: true });
+    container.addEventListener('touchmove', function(e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        var dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        if (lastPinchDist > 0) {
+          var ratio = dist / lastPinchDist;
+          setZoom(scale * ratio);
+        }
+        lastPinchDist = dist;
+      }
+    }, { passive: false });
+    container.addEventListener('touchend', function() { lastPinchDist = 0; }, { passive: true });
+  })();
+
+  // --- v12: Template Favorites ---
+  (function initTemplateFavorites() {
+    var FAV_KEY = 'wificard_fav_templates';
+    var favs = [];
+    try { favs = JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch(e) { favs = []; }
+
+    function saveFavs() {
+      try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch(e) {}
+    }
+
+    function updateFavUI() {
+      document.querySelectorAll('.template-fav-btn').forEach(function(btn) {
+        var tpl = btn.getAttribute('data-fav');
+        var isFav = favs.indexOf(tpl) !== -1;
+        btn.classList.toggle('favorited', isFav);
+        btn.innerHTML = isFav ? '&#9733;' : '&#9734;';
+        btn.closest('.template-item').classList.toggle('is-favorite', isFav);
+      });
+    }
+
+    document.querySelectorAll('.template-fav-btn').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var tpl = this.getAttribute('data-fav');
+        var idx = favs.indexOf(tpl);
+        if (idx !== -1) favs.splice(idx, 1);
+        else favs.push(tpl);
+        saveFavs();
+        updateFavUI();
+      });
+    });
+
+    updateFavUI();
+  })();
+
+  // --- v12: Generation Sound (soft "print" sound via Web Audio) ---
+  var _wfcAudioCtx = null;
+  function playPrintSound() {
+    try {
+      if (!_wfcAudioCtx) _wfcAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var ctx = _wfcAudioCtx;
+      var now = ctx.currentTime;
+      // Soft mechanical "print" click + whir
+      var osc1 = ctx.createOscillator();
+      var gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(800, now);
+      osc1.frequency.exponentialRampToValueAtTime(400, now + 0.08);
+      gain1.gain.setValueAtTime(0.12, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.12);
+      // Second click
+      var osc2 = ctx.createOscillator();
+      var gain2 = ctx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(600, now + 0.05);
+      osc2.frequency.exponentialRampToValueAtTime(300, now + 0.15);
+      gain2.gain.setValueAtTime(0.08, now + 0.05);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.05);
+      osc2.stop(now + 0.18);
+      // Soft noise burst
+      var bufLen = Math.floor(ctx.sampleRate * 0.06);
+      var buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+      var data = buf.getChannelData(0);
+      for (var i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1) * 0.03;
+      var noise = ctx.createBufferSource();
+      noise.buffer = buf;
+      var noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(0.06, now + 0.02);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      noise.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      noise.start(now + 0.02);
+      noise.stop(now + 0.1);
+    } catch(e) {}
+  }
+
+  // Hook sound into print & download buttons
+  var _origPrintClick = btnPrint.onclick;
+  btnPrint.addEventListener('click', function() { playPrintSound(); }, true);
+  btnDownload.addEventListener('click', function() { playPrintSound(); }, true);
+  btnDownloadPDF.addEventListener('click', function() { playPrintSound(); }, true);
+  btnDownloadSVG.addEventListener('click', function() { playPrintSound(); }, true);
 
   // --- Onboarding ---
   (function initOnboarding() {
