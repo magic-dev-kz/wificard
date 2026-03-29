@@ -1,5 +1,5 @@
-<!-- WifiCard v2.6 -->
 <!DOCTYPE html>
+<!-- WifiCard v4.0 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -11,22 +11,27 @@
 <meta property="og:title" content="WifiCard — Beautiful WiFi Guest Cards">
 <meta property="og:description" content="Generate printable WiFi cards with QR codes. Free, offline, no server needed. Just print and share.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://magic-dev-kz.github.io/wificard//og-image.png">
-<meta property="og:url" content="https://magic-dev-kz.github.io/wificard/">
+<meta property="og:image" content="https://wificard.io/og-image.png">
+<meta property="og:url" content="https://wificard.io">
 <meta property="og:site_name" content="WifiCard">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="WifiCard — Beautiful WiFi Guest Cards">
 <meta name="twitter:description" content="Generate printable WiFi cards with QR codes. Free, offline, no server.">
-<meta name="twitter:image" content="https://magic-dev-kz.github.io/wificard//og-image.png">
+<meta name="twitter:image" content="https://wificard.io/og-image.png">
 
 <!-- Author -->
 <meta name="author" content="OpenClaw">
-<link rel="canonical" href="https://magic-dev-kz.github.io/wificard/">
+<link rel="canonical" href="https://wificard.io">
 
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📶</text></svg>">
+
+<!-- Google Fonts: Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -44,16 +49,22 @@
   --color-text-secondary: #6B7280;
   --color-accent: #4F46E5;
   --color-accent-hover: #4338CA;
+  --color-accent-light: rgba(79, 70, 229, 0.12);
   --color-border: #E5E7EB;
   --color-security-bg: #ECFDF5;
   --color-security-border: #A7F3D0;
   --color-security-text: #065F46;
 
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.04), 0 10px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.06), 0 20px 48px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.25);
+
+  --gradient-accent: linear-gradient(135deg, #6366F1, #4F46E5, #4338CA);
+  --gradient-accent-hover: linear-gradient(135deg, #818CF8, #6366F1, #4F46E5);
 
   --card-width: 378px;
   --card-height: 264px;
@@ -61,6 +72,275 @@
 
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
+}
+
+/* ============================================
+   Dark Mode
+   ============================================ */
+[data-theme="dark"] {
+  --color-bg: #0F1117;
+  --color-surface: #1A1D27;
+  --color-text: #E5E7EB;
+  --color-text-secondary: #9CA3AF;
+  --color-accent: #818CF8;
+  --color-accent-hover: #6366F1;
+  --color-accent-light: rgba(129, 140, 248, 0.18);
+  --color-border: #2D3348;
+  --color-security-bg: #0D2818;
+  --color-security-border: #1A4D2E;
+  --color-security-text: #6EE7B7;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.2), 0 10px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3), 0 20px 48px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 0 20px rgba(129, 140, 248, 0.3);
+
+  --gradient-accent: linear-gradient(135deg, #818CF8, #6366F1, #4F46E5);
+  --gradient-accent-hover: linear-gradient(135deg, #A5B4FC, #818CF8, #6366F1);
+}
+
+[data-theme="dark"] body {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(129, 140, 248, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(167, 139, 250, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, 0.03) 0%, transparent 70%),
+    var(--color-bg);
+}
+
+[data-theme="dark"] .header {
+  background: rgba(26, 29, 39, 0.82);
+  border-bottom-color: rgba(45, 51, 72, 0.6);
+}
+
+[data-theme="dark"] .card-container {
+  background-image: radial-gradient(circle, #2D3348 1px, transparent 1px);
+}
+
+[data-theme="dark"] .action-btn.secondary:hover {
+  background: #232736;
+}
+
+[data-theme="dark"] .generate-btn:hover {
+  background: #232736;
+}
+
+[data-theme="dark"] .generate-btn.generated {
+  background: #0D2818;
+  border-color: #1A4D2E;
+  color: #6EE7B7;
+}
+
+/* Dark mode toggle button */
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.dark-mode-toggle:hover {
+  color: var(--color-text);
+  border-color: var(--color-accent);
+}
+
+.dark-mode-toggle .icon-sun,
+.dark-mode-toggle .icon-moon { display: none; }
+
+[data-theme="dark"] .dark-mode-toggle .icon-sun { display: block; }
+:root:not([data-theme="dark"]) .dark-mode-toggle .icon-moon { display: block; }
+/* Fallback: when no data-theme attr, show moon */
+.dark-mode-toggle .icon-moon { display: block; }
+[data-theme="dark"] .dark-mode-toggle .icon-moon { display: none; }
+
+/* ============================================
+   Copy Password Button
+   ============================================ */
+.copy-pass-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.copy-pass-btn:hover {
+  color: var(--color-text);
+  background: #F3F4F6;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-light);
+}
+
+[data-theme="dark"] .copy-pass-btn:hover {
+  background: #232736;
+}
+
+.copy-pass-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.copy-pass-btn.copied {
+  background: #ECFDF5;
+  border-color: #A7F3D0;
+  color: #065F46;
+}
+
+[data-theme="dark"] .copy-pass-btn.copied {
+  background: #0D2818;
+  border-color: #1A4D2E;
+  color: #6EE7B7;
+}
+
+/* ============================================
+   Card Preview Animations
+   ============================================ */
+@keyframes cardShadowPulse {
+  0% { box-shadow: var(--shadow-md); }
+  50% { box-shadow: var(--shadow-lg), 0 0 24px rgba(79, 70, 229, 0.12); }
+  100% { box-shadow: var(--shadow-md); }
+}
+
+.wifi-card.first-render {
+  animation: cardIn 0.6s ease 0.15s both, cardShadowPulse 2s ease 0.8s 1;
+}
+
+.wifi-card.template-fade-in {
+  animation: cardFadeIn 0.3s ease both;
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: scale(0.97) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ============================================
+   Onboarding Animated Illustration
+   ============================================ */
+.wificard-onb-illustration {
+  position: relative;
+  width: 120px;
+  height: 80px;
+  margin-bottom: 8px;
+}
+
+.wificard-onb-illustration .onb-phone {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 64px;
+  background: var(--color-surface);
+  border: 2.5px solid #4F46E5;
+  border-radius: 8px;
+}
+
+.wificard-onb-illustration .onb-phone::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 3px;
+  background: #D1D5DB;
+  border-radius: 2px;
+}
+
+.wificard-onb-illustration .onb-wave {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  border: 2.5px solid #6366F1;
+  border-radius: 50%;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  opacity: 0;
+}
+
+.wificard-onb-illustration .onb-wave-1 {
+  width: 30px; height: 30px;
+  animation: onbWave 2s ease-in-out 0.5s infinite;
+}
+.wificard-onb-illustration .onb-wave-2 {
+  width: 52px; height: 52px;
+  animation: onbWave 2s ease-in-out 0.8s infinite;
+}
+.wificard-onb-illustration .onb-wave-3 {
+  width: 74px; height: 74px;
+  animation: onbWave 2s ease-in-out 1.1s infinite;
+}
+
+@keyframes onbWave {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.85); }
+  30%  { opacity: 0.7; }
+  70%  { opacity: 0.7; }
+  100% { opacity: 0; transform: translateX(-50%) scale(1.05); }
+}
+
+.wificard-onb-illustration .onb-qr-mini {
+  position: absolute;
+  left: 50%;
+  top: 30px;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 1px;
+}
+
+.wificard-onb-illustration .onb-qr-mini span {
+  background: #4F46E5;
+  border-radius: 0.5px;
+}
+
+.wificard-onb-illustration .onb-qr-mini span:nth-child(2),
+.wificard-onb-illustration .onb-qr-mini span:nth-child(5),
+.wificard-onb-illustration .onb-qr-mini span:nth-child(8),
+.wificard-onb-illustration .onb-qr-mini span:nth-child(11),
+.wificard-onb-illustration .onb-qr-mini span:nth-child(14) {
+  background: transparent;
+}
+
+/* ============================================
+   Keyframe Animations
+   ============================================ */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
 }
 
 /* ============================================
@@ -74,7 +354,11 @@
 
 body {
   font-family: var(--font-ui);
-  background: var(--color-bg);
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(99, 102, 241, 0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(79, 70, 229, 0.03) 0%, transparent 70%),
+    var(--color-bg);
   color: var(--color-text);
   line-height: 1.5;
   min-height: 100vh;
@@ -100,8 +384,13 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-logo {
@@ -109,7 +398,8 @@ body {
   align-items: center;
   gap: 8px;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--color-text);
   text-decoration: none;
 }
@@ -140,15 +430,17 @@ body {
   width: 40%;
   min-width: 300px;
   background: var(--color-surface);
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
   padding: 32px;
   flex-shrink: 0;
+  animation: cardIn 0.5s ease both;
 }
 
 .form-panel h2 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   margin-bottom: 24px;
   color: var(--color-text);
 }
@@ -171,8 +463,8 @@ body {
   width: 100%;
   height: 48px;
   padding: 12px 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
   font-size: 16px;
   font-family: var(--font-ui);
   color: var(--color-text);
@@ -180,11 +472,17 @@ body {
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+.form-group input[type="text"]:hover,
+.form-group input[type="password"]:hover,
+.form-group select:hover {
+  border-color: #C7C9CE;
+}
+
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 4px var(--color-accent-light);
 }
 
 /* Input with icon */
@@ -328,6 +626,7 @@ body {
   align-items: center;
   gap: 20px;
   min-width: 0;
+  animation: cardIn 0.5s ease 0.1s both;
 }
 
 /* Card preview container — dotted pattern background */
@@ -339,7 +638,7 @@ body {
   min-height: 320px;
   background-image: radial-gradient(circle, #d1d5db 1px, transparent 1px);
   background-size: 20px 20px;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 24px;
 }
 
@@ -347,9 +646,17 @@ body {
 .wifi-card {
   width: var(--card-width);
   height: var(--card-height);
-  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  transition: opacity var(--transition-normal), transform var(--transition-normal), box-shadow var(--transition-normal);
   position: relative;
   overflow: hidden;
+  animation: cardIn 0.6s ease 0.15s both;
+  box-shadow: var(--shadow-md);
+  border-radius: 8px;
+}
+
+.wifi-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .wifi-card.fade-out {
@@ -378,17 +685,19 @@ body {
   gap: 8px;
   height: 44px;
   padding: 0 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
   font-family: var(--font-ui);
   cursor: pointer;
-  transition: background var(--transition-fast), transform 0.1s ease;
+  transition: background var(--transition-fast), transform 0.1s ease, box-shadow var(--transition-fast);
   border: none;
+  position: relative;
+  overflow: hidden;
 }
 
 .action-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .action-btn:focus-visible {
@@ -397,22 +706,39 @@ body {
 }
 
 .action-btn.primary {
-  background: var(--color-accent);
+  background: var(--gradient-accent);
   color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+}
+
+.action-btn.primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+  transform: translateX(-100%);
+  transition: none;
 }
 
 .action-btn.primary:hover {
-  background: var(--color-accent-hover);
+  background: var(--gradient-accent-hover);
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35), var(--shadow-glow);
+}
+
+.action-btn.primary:hover::before {
+  animation: shimmer 0.8s ease forwards;
 }
 
 .action-btn.secondary {
   background: var(--color-surface);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
 }
 
 .action-btn.secondary:hover {
   background: #F9FAFB;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-light);
 }
 
 /* ============================================
@@ -443,12 +769,12 @@ body {
   flex-shrink: 0;
   width: 100px;
   height: 70px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  border: none;
+  border: 2px solid transparent;
   padding: 0;
   opacity: 0.7;
-  transition: transform var(--transition-fast), opacity var(--transition-fast);
+  transition: transform var(--transition-fast), opacity var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
   scroll-snap-align: start;
   position: relative;
   overflow: hidden;
@@ -457,7 +783,8 @@ body {
 
 .template-thumb:hover {
   opacity: 1;
-  transform: scale(1.05);
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.15);
 }
 
 .template-thumb:focus-visible {
@@ -467,9 +794,11 @@ body {
 
 .template-thumb.active {
   opacity: 1;
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  outline: none;
   transform: scale(1);
+  box-shadow: 0 0 0 2px var(--color-accent), 0 0 12px rgba(79, 70, 229, 0.2);
 }
 
 .template-thumb-inner {
@@ -480,7 +809,8 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .template-label {
@@ -1055,8 +1385,8 @@ body {
   gap: 6px;
   height: 48px;
   padding: 0 14px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
   background: var(--color-surface);
   color: var(--color-text);
   font-family: var(--font-ui);
@@ -1065,12 +1395,13 @@ body {
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .generate-btn:hover {
   background: #F3F4F6;
   border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-light);
 }
 
 .generate-btn:focus-visible {
@@ -1103,8 +1434,8 @@ body {
   width: 100%;
   height: 48px;
   padding: 12px 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
   font-size: 16px;
   font-family: var(--font-ui);
   color: var(--color-text);
@@ -1112,10 +1443,14 @@ body {
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+.welcome-field input:hover {
+  border-color: #C7C9CE;
+}
+
 .welcome-field input:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 4px var(--color-accent-light);
 }
 
 .welcome-char-count {
@@ -1205,6 +1540,33 @@ body {
   .security-badge {
     margin: 16px;
   }
+
+  /* Touch targets: minimum 44px */
+  .action-btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 16px;
+  }
+
+  .template-thumb {
+    min-width: 100px;
+    min-height: 70px;
+  }
+
+  .toggle-switch {
+    min-width: 44px;
+    min-height: 28px;
+  }
+
+  .generate-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .actions {
+    gap: 10px;
+    padding: 0 4px;
+  }
 }
 
 /* Scale card down on small screens */
@@ -1271,6 +1633,7 @@ body {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
+    transform: none !important;
   }
 
   @page {
@@ -1322,7 +1685,7 @@ body {
   max-width: 400px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10), 0 0 0 1px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1335,9 +1698,9 @@ body {
 }
 .wificard-onb-title {
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 800;
   color: #1A1A2E;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
 }
 .wificard-onb-subtitle {
   font-size: 16px;
@@ -1374,18 +1737,31 @@ body {
   font-size: 17px;
   font-weight: 600;
   color: #FFFFFF;
-  background: #4F46E5;
+  background: var(--gradient-accent);
   border: none;
   border-radius: 14px;
   padding: 14px 36px;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
   width: 100%;
   max-width: 280px;
+  box-shadow: 0 2px 12px rgba(79, 70, 229, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+.wificard-onb-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+  transform: translateX(-100%);
 }
 .wificard-onb-cta:hover {
-  background: #4338CA;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.45), var(--shadow-glow);
   transform: scale(1.02);
+}
+.wificard-onb-cta:hover::before {
+  animation: shimmer 0.8s ease forwards;
 }
 .wificard-onb-cta:active {
   transform: scale(0.97);
@@ -1399,7 +1775,14 @@ body {
      ============================================ -->
 <div id="wificard-onboarding" class="wificard-onboarding-overlay" style="display:none;">
   <div class="wificard-onb-card">
-    <div class="wificard-onb-icon" aria-hidden="true">&#x1F4F6;</div>
+    <div class="wificard-onb-illustration" aria-hidden="true">
+      <div class="onb-phone">
+        <div class="onb-qr-mini"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+      <div class="onb-wave onb-wave-1"></div>
+      <div class="onb-wave onb-wave-2"></div>
+      <div class="onb-wave onb-wave-3"></div>
+    </div>
     <h1 class="wificard-onb-title">WifiCard</h1>
     <p class="wificard-onb-subtitle">Beautiful WiFi cards for your guests. Free, private, no account needed.</p>
     <ul class="wificard-onb-features">
@@ -1424,6 +1807,10 @@ body {
     </svg>
     WifiCard
   </a>
+  <button type="button" class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+  </button>
 </header>
 
 <!-- ============================================
@@ -1453,12 +1840,13 @@ body {
         <label for="password">Password</label>
         <div class="password-row">
           <div class="input-wrapper">
-            <input type="text" id="password" placeholder="Enter WiFi password" autocomplete="off" aria-describedby="password-hint" value="password123">
+            <input type="text" id="password" placeholder="Enter WiFi password" autocomplete="off" aria-describedby="password-hint" value="MyPassword">
             <button type="button" class="toggle-pass-btn" id="togglePassBtn" aria-label="Toggle password visibility">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="eyeIcon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
             <span id="password-hint" class="sr-only">Enter your WiFi password</span>
           </div>
+          <button type="button" class="copy-pass-btn" id="copyPassBtn" title="Copy password to clipboard" aria-label="Copy password to clipboard"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</button>
           <button type="button" class="generate-btn" id="generatePassBtn" title="Generate a secure WiFi password" aria-label="Generate a secure WiFi password">&#x1F511; Generate</button>
         </div>
       </div>
@@ -1623,11 +2011,15 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
   var clearSettingsBtn = document.getElementById('clearSettingsBtn');
   var btnDownloadSVG = document.getElementById('btnDownloadSVG');
   var btnCopyWifi = document.getElementById('btnCopyWifi');
+  var copyPassBtn = document.getElementById('copyPassBtn');
+  var darkModeToggle = document.getElementById('darkModeToggle');
 
   // --- State ---
   var currentTemplate = 'minimal';
   var debounceTimer = null;
+  var isFirstRender = true;
   var STORAGE_KEY = 'wificard_settings';
+  var DARK_MODE_KEY = 'wificard_dark_mode';
 
   // --- Secure Password Generator ---
   function generateSecurePassword(length) {
@@ -1873,13 +2265,73 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     }
   };
 
+  // --- Dark Mode ---
+  function setDarkMode(enabled) {
+    if (enabled) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    try { localStorage.setItem(DARK_MODE_KEY, enabled ? '1' : '0'); } catch(e) {}
+  }
+
+  function isDarkMode() {
+    return document.documentElement.getAttribute('data-theme') === 'dark';
+  }
+
+  // Restore dark mode preference
+  (function initDarkMode() {
+    try {
+      var saved = localStorage.getItem(DARK_MODE_KEY);
+      if (saved === '1') {
+        setDarkMode(true);
+      } else if (saved === null && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setDarkMode(true);
+      }
+    } catch(e) {}
+  })();
+
+  darkModeToggle.addEventListener('click', function() {
+    setDarkMode(!isDarkMode());
+  });
+
+  // --- Copy Password ---
+  copyPassBtn.addEventListener('click', function() {
+    var pwd = passwordInput.value;
+    if (!pwd) return;
+
+    function showCopied() {
+      var orig = copyPassBtn.innerHTML;
+      copyPassBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      copyPassBtn.classList.add('copied');
+      setTimeout(function() {
+        copyPassBtn.innerHTML = orig;
+        copyPassBtn.classList.remove('copied');
+      }, 1500);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pwd).then(showCopied).catch(function() {
+        if (fallbackCopy(pwd)) showCopied();
+      });
+    } else {
+      if (fallbackCopy(pwd)) showCopied();
+    }
+  });
+
   // --- Render Card ---
-  function renderCard() {
+  function renderCard(withAnimation) {
     var v = getValues();
     var tpl = templates[currentTemplate](v);
 
     // Remove old class, add new
     wifiCardEl.className = 'wifi-card ' + tpl.className;
+    if (isFirstRender) {
+      wifiCardEl.classList.add('first-render');
+      isFirstRender = false;
+    } else if (withAnimation) {
+      wifiCardEl.classList.add('template-fade-in');
+    }
     wifiCardEl.innerHTML = tpl.html;
 
     // Render QR code into the canvas
@@ -1961,7 +2413,7 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
   clearSettingsBtn.addEventListener('click', function() {
     clearSettings();
     ssidInput.value = 'MyWiFi';
-    passwordInput.value = 'password123';
+    passwordInput.value = 'MyPassword';
     welcomeInput.value = '';
     welcomeCharCount.textContent = '0';
     // Reset template to minimal
@@ -2007,15 +2459,15 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
       this.setAttribute('aria-checked', 'true');
       this.setAttribute('tabindex', '0');
 
-      // Crossfade animation
+      // Crossfade animation: fade-out then fade-in
       wifiCardEl.classList.add('fade-out');
       setTimeout(function() {
         currentTemplate = tpl;
-        renderCard();
+        renderCard(true);
         announceCardUpdate();
         saveSettings();
         wifiCardEl.classList.remove('fade-out');
-      }, 150);
+      }, 250);
     });
 
     // Keyboard navigation for template selector
