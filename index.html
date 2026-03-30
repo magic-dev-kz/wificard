@@ -5037,9 +5037,9 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
 
 })();
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(function(){});
-}
+// v26: Defer SW registration to not block first paint
+if('requestIdleCallback' in window){requestIdleCallback(function(){if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(){});}});}
+else{setTimeout(function(){if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(){});}},100);}
 
 // --- v7: PWA Install Prompt (after 2+ visits) ---
 (function() {
