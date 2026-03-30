@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>WifiCard Icon 1024x1024</title>
+<style>
+body { margin: 0; padding: 0; background: #ccc; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+.icon {
+  width: 1024px;
+  height: 1024px;
+  background: linear-gradient(145deg, #FBF8F4 0%, #F5EDE4 100%);
+  border-radius: 224px; /* iOS icon radius = ~21.875% */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.1);
+}
+
+/* WiFi arcs */
+.wifi {
+  position: relative;
+  width: 280px;
+  height: 220px;
+  margin-bottom: 40px;
+}
+.wifi .arc {
+  position: absolute;
+  border: 0 solid transparent;
+  border-top: 24px solid #D4A574;
+  border-radius: 50%;
+}
+.wifi .arc-1 { width: 280px; height: 280px; top: 0; left: 0; }
+.wifi .arc-2 { width: 200px; height: 200px; top: 40px; left: 40px; }
+.wifi .arc-3 { width: 120px; height: 120px; top: 80px; left: 80px; }
+.wifi .dot {
+  width: 36px;
+  height: 36px;
+  background: #D4A574;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* QR mini icon */
+.qr {
+  display: grid;
+  grid-template-columns: repeat(5, 28px);
+  grid-template-rows: repeat(5, 28px);
+  gap: 4px;
+  margin-bottom: 48px;
+}
+.qr span {
+  border-radius: 4px;
+}
+.qr .b { background: #44403C; }
+.qr .w { background: rgba(68,64,60,0.08); }
+
+/* Text */
+.name {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  font-size: 96px;
+  font-weight: 800;
+  color: #1C1917;
+  letter-spacing: -2px;
+}
+.sub {
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 40px;
+  font-weight: 400;
+  color: #78716C;
+  margin-top: 8px;
+}
+
+/* Decorative bottom line */
+.line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: linear-gradient(90deg, #D4A574, #E8D5C0, #D4A574);
+}
+</style>
+</head>
+<body>
+<div class="icon">
+  <div class="wifi">
+    <div class="arc arc-1"></div>
+    <div class="arc arc-2"></div>
+    <div class="arc arc-3"></div>
+    <div class="dot"></div>
+  </div>
+  <div class="qr">
+    <span class="b"></span><span class="b"></span><span class="b"></span><span class="w"></span><span class="b"></span>
+    <span class="b"></span><span class="w"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+    <span class="b"></span><span class="b"></span><span class="b"></span><span class="w"></span><span class="w"></span>
+    <span class="w"></span><span class="b"></span><span class="w"></span><span class="b"></span><span class="b"></span>
+    <span class="b"></span><span class="w"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+  </div>
+  <div class="name">WifiCard</div>
+  <div class="sub">WiFi Guest Cards</div>
+  <div class="line"></div>
+</div>
+</body>
+</html>

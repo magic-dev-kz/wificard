@@ -1,5 +1,10 @@
 # WifiCard — Changelog
 
+## v19.0 (2026-03-29) — Error Handling Hardening
+
+- **Offline toast**: `navigator.onLine` check before print/download — shows offline warning toast
+- SW cache bumped to `wificard-v19.0`
+
 ## v18.0 (2026-03-29) — SEO / Meta Pass
 
 - **theme-color**: Added `<meta name="theme-color" content="#4F46E5">`

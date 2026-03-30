@@ -3627,13 +3627,23 @@ var qrcode=function(){var e={L:1,M:0,Q:3,H:2},t=function(t,r){var n=236,o=17,a=t
     toast.classList.add('visible');
     setTimeout(function() { toast.classList.remove('visible'); }, 3500);
   }
+  // v19: Offline toast for print/download
+  function showOfflineToast() {
+    if (navigator.onLine) return;
+    var t = document.getElementById('offlineToast');
+    if (!t) return;
+    t.classList.add('visible');
+    setTimeout(function() { t.classList.remove('visible'); }, 3500);
+  }
   btnPrint.addEventListener('click', function() {
+    showOfflineToast();
     window.print();
   });
 
   // --- Download PNG ---
   // Renders the card entirely via Canvas 2D API for reliable PNG export
   btnDownload.addEventListener('click', function() {
+    showOfflineToast(); // v19: offline warning
     var v = getValues();
     var W = 756; // 2x card width for high res
     var H = 528; // 2x card height
@@ -5020,6 +5030,7 @@ document.addEventListener('keydown', function(e) {
   </div>
 </div>
 <div class="print-toast" id="printToast">Tip: Choose &lsquo;Save as PDF&rsquo; for digital sharing</div>
+<div class="print-toast" id="offlineToast" style="background:rgba(180,80,0,0.92);color:#fff">You are offline. Print/download still works with local data.</div>
 <div class="oc-footer"><a href="https://magic-dev-kz.github.io/openclaw/" target="_blank" rel="noopener">More free tools → OpenClaw</a></div>
 </body>
 </html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WifiCard OG Image</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  margin: 0; padding: 0;
+  width: 1200px; height: 630px; overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #FBF8F4;
+  position: relative;
+}
+
+/* Linen texture — horizontal lines */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 7px,
+    #F0EDE7 7px,
+    #F0EDE7 8px
+  );
+  opacity: 0.3;
+  z-index: 0;
+}
+
+/* Back card (for depth) */
+.card-back {
+  position: absolute;
+  left: 130px; top: 210px;
+  width: 400px; height: 260px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  transform: rotate(2deg);
+  opacity: 0.7;
+  z-index: 1;
+}
+
+/* Front card */
+.card-front {
+  position: absolute;
+  left: 100px; top: 185px;
+  width: 400px; height: 260px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  transform: rotate(-3deg);
+  z-index: 2;
+  overflow: hidden;
+}
+
+/* Card header */
+.card-header {
+  position: absolute;
+  top: 24px; left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wifi-icon {
+  width: 32px; height: 28px;
+  position: relative;
+}
+
+.wifi-icon .arc {
+  position: absolute;
+  border: 3px solid #D4A574;
+  border-radius: 50%;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+}
+.wifi-icon .arc1 { width: 10px; height: 10px; bottom: 2px; left: 11px; border-width: 3px; border-top-left-radius: 50%; border-top-right-radius: 50%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border: none; border-top: 3px solid #D4A574; }
+.wifi-icon .arc2 { width: 20px; height: 14px; bottom: 2px; left: 6px; border-top: 3px solid #D4A574; border-left: none; border-right: none; border-bottom: none; }
+.wifi-icon .arc3 { width: 30px; height: 20px; bottom: 2px; left: 1px; border-top: 3px solid #D4A574; border-left: none; border-right: none; border-bottom: none; }
+.wifi-icon .dot { position: absolute; bottom: 0; left: 14px; width: 4px; height: 4px; background: #D4A574; border-radius: 50%; }
+
+.card-title {
+  font-weight: 700;
+  font-size: 20px;
+  color: #44403C;
+}
+
+/* QR code area */
+.qr-area {
+  position: absolute;
+  top: 68px; left: 140px;
+  width: 120px; height: 120px;
+  background: #1C1917;
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 1fr);
+  padding: 4px;
+  gap: 0;
+}
+
+.qr-cell {
+  width: 100%; height: 100%;
+}
+.qr-cell.white { background: #FFFFFF; }
+.qr-cell.black { background: #1C1917; }
+
+/* Card footer */
+.card-network {
+  position: absolute;
+  top: 210px; left: 24px;
+  font-weight: 400;
+  font-size: 13px;
+  color: #78716C;
+}
+.card-password {
+  position: absolute;
+  top: 228px; left: 24px;
+  font-weight: 400;
+  font-size: 13px;
+  color: #78716C;
+}
+
+/* Text block — right side */
+.text-block {
+  position: absolute;
+  left: 580px; top: 160px;
+  z-index: 3;
+}
+
+.product-name {
+  font-weight: 800;
+  font-size: 52px;
+  color: #1C1917;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  position: absolute;
+  top: 70px; left: 0;
+  font-weight: 400;
+  font-size: 22px;
+  color: #78716C;
+  line-height: 32px;
+}
+
+.badges {
+  position: absolute;
+  top: 160px; left: 0;
+  display: flex;
+  gap: 12px;
+}
+
+.badge {
+  background: #F5F0EB;
+  color: #A8937A;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Bottom gradient line */
+.bottom-line {
+  position: absolute;
+  left: 0; top: 626px;
+  width: 1200px; height: 4px;
+  background: linear-gradient(to right, #D4A574, #E8D5C0);
+  z-index: 10;
+}
+</style>
+</head>
+<body>
+
+<div class="card-back"></div>
+
+<div class="card-front">
+  <div class="card-header">
+    <div class="wifi-icon">
+      <div class="arc arc3"></div>
+      <div class="arc arc2"></div>
+      <div class="arc arc1"></div>
+      <div class="dot"></div>
+    </div>
+    <span class="card-title">Home WiFi</span>
+  </div>
+
+  <div class="qr-area" id="qr"></div>
+
+  <div class="card-network">Network: HomeWiFi_5G</div>
+  <div class="card-password">Password: ••••••••</div>
+</div>
+
+<div class="text-block">
+  <div class="product-name">WifiCard</div>
+  <div class="subtitle">
+    Beautiful WiFi guest cards<br>with QR codes
+  </div>
+  <div class="badges">
+    <span class="badge">Free</span>
+    <span class="badge">Offline</span>
+    <span class="badge">Print</span>
+  </div>
+</div>
+
+<div class="bottom-line"></div>
+
+<script>
+// Generate pseudo-random QR pattern
+const qr = document.getElementById('qr');
+// Seed pattern — deterministic for consistent screenshots
+const pattern = [
+  1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,
+  1,0,0,0,0,0,1,0,0,1,0,1,1,0,1,
+  1,0,1,1,1,0,1,0,1,0,0,0,1,0,0,
+  1,0,1,1,1,0,1,0,0,1,1,0,0,1,1,
+  1,0,1,1,1,0,1,0,1,0,1,1,0,0,1,
+  1,0,0,0,0,0,1,0,0,1,0,0,1,1,0,
+  1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,
+  0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,
+  1,0,1,1,0,1,1,1,0,0,1,0,1,1,0,
+  0,1,0,0,1,0,0,0,1,1,0,1,0,0,1,
+  1,0,1,0,1,1,1,0,0,1,1,0,1,0,1,
+  0,0,0,1,0,0,0,1,1,0,0,1,0,1,0,
+  1,1,1,1,1,1,1,0,1,0,1,0,0,1,1,
+  1,0,0,0,0,0,1,0,0,1,1,0,1,0,0,
+  1,0,1,1,1,0,1,0,1,0,0,1,1,1,1
+];
+for (let i = 0; i < 225; i++) {
+  const cell = document.createElement('div');
+  cell.className = 'qr-cell ' + (pattern[i] ? 'black' : 'white');
+  qr.appendChild(cell);
+}
+</script>
+</body>
+</html>
