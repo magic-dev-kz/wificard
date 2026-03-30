@@ -1,5 +1,10 @@
 # WifiCard — Changelog
 
+## v20.0 (2026-03-29) — Print Styles Verified
+
+- **Print verification**: Existing `@media print` rules confirmed working — card prints cleanly with color-adjust, batch print with page breaks, stats bar hidden
+- SW cache bumped to `wificard-v20.0`
+
 ## v19.0 (2026-03-29) — Error Handling Hardening
 
 - **Offline toast**: `navigator.onLine` check before print/download — shows offline warning toast
