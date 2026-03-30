@@ -1,5 +1,15 @@
 # WifiCard — Changelog
 
+## v22.0 (2026-03-29) — Data Portability
+
+- **Export saved settings/networks as JSON**: "Export" button in footer exports WiFi settings, favorite templates, font choice, accent color, and dark mode preference as a portable JSON backup file
+- SW cache bumped to `wificard-v22.0`
+
+## v21.0 (2026-03-29) — Custom Card Font
+
+- **Custom font selector**: Dropdown to choose between Modern (Inter), Classic (Playfair Display), or Handwritten (Caveat) fonts for the WiFi card; fonts loaded via Google Fonts; selection persisted in localStorage; card re-renders on change
+- SW cache bumped to `wificard-v21.0`
+
 ## v20.0 (2026-03-29) — Print Styles Verified
 
 - **Print verification**: Existing `@media print` rules confirmed working — card prints cleanly with color-adjust, batch print with page breaks, stats bar hidden
