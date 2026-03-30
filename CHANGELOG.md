@@ -1,5 +1,12 @@
 # WifiCard — Changelog
 
+## v17.0 (2026-03-29) — Accessibility Pass
+
+- **Skip link**: "Skip to main content" link for keyboard users
+- **Card preview**: Already had `aria-label="WiFi card preview"` (verified)
+- **Template thumbs**: Already had `aria-label` per template name (verified)
+- SW cache bumped to `wificard-v17.0`
+
 ## v16.0 (2026-03-29) — Card Border Style
 
 - **Card Border Style**: Dropdown to choose Solid, Dashed, or None border on the WiFi card preview
