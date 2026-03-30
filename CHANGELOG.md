@@ -1,5 +1,12 @@
 # WifiCard — Changelog
 
+
+## v23.0 (2026-03-29) — Deferred Font Loading
+
+- **Non-blocking Google Fonts**: Inter, Playfair Display, and Caveat font CSS changed from render-blocking `<link rel="stylesheet">` to `<link rel="preload" ... onload>` with `<noscript>` fallback — improves First Contentful Paint
+- SW cache bumped to `wificard-v23.0`
+
+---
 ## v22.0 (2026-03-29) — Data Portability
 
 - **Export saved settings/networks as JSON**: "Export" button in footer exports WiFi settings, favorite templates, font choice, accent color, and dark mode preference as a portable JSON backup file
